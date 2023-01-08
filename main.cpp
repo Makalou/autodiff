@@ -21,7 +21,7 @@ double func1_dx_truth(double x){
 }
 
 dual g(dual x){
-    //return 0.01*pow(x,4)+pow(3,x)+0.001*pow(x,2);
+    return 0.01*pow(x,4)+pow(3,x)+0.001*pow(x,2);
 }
 
 template<bool silence = true>
@@ -59,7 +59,7 @@ int main() {
 
     std::cout << output <<","<<dx<< std::endl;
 
-    auto [minimum,xx] = gradient_descent_optimizer<true>(g,3,1e-10,0.0001);
+    auto [minimum,xx] = gradient_descent_optimizer<false>(g,3,1e-10,0.0001);
 
     std::cout << minimum <<" at "<<xx<< std::endl;
 

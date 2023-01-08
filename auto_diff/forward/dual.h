@@ -12,13 +12,66 @@ namespace ad {
     struct dual_number {
     private:
         double _dual_part;
-    protected:
         double _real_part;
     public:
 
         dual_number(double real_part,double dual_part): _real_part(real_part),_dual_part(dual_part){};
 
+        //todo Caution : FP comparison
+        bool operator == (const dual_number &other) const {
+            return _real_part == other._real_part;
+        }
+
+        bool operator != (const dual_number &other) const{
+            return _real_part != other._real_part;
+        }
+
+        bool operator < (const dual_number &other) const{
+            return _real_part < other._real_part;
+        }
+
+        bool operator <= (const dual_number &other) const{
+            return _real_part <= other._real_part;
+        }
+
+        bool operator > (const dual_number &other) const{
+            return _real_part > other._real_part;
+        }
+
+        bool operator >= (const dual_number &other) const{
+            return _real_part >= other._real_part;
+        }
+
+        friend
+        bool operator == (double x,const dual_number &dual);
+        friend
+        bool operator == (const dual_number &dual,double x);
+        friend
+        bool operator != (double x,const dual_number &dual);
+        friend
+        bool operator != (const dual_number &dual,double x);
+        friend
+        bool operator < (double x,const dual_number &dual);
+        friend
+        bool operator < (const dual_number &dual,double x);
+        friend
+        bool operator <= (double x,const dual_number &dual);
+        friend
+        bool operator <= (const dual_number &dual,double x);
+        friend
+        bool operator > (double x,const dual_number &dual);
+        friend
+        bool operator > (const dual_number &dual,double x);
+        friend
+        bool operator >= (double x,const dual_number &dual);
+        friend
+        bool operator >= (const dual_number &dual,double x);
+
         // Basic algebra operation
+        dual_number operator-() const{
+            return dual_number{-_real_part,_dual_part};
+        }
+
         void operator+=(const dual_number &other) {
             _real_part += other._real_part;
             _dual_part += other._dual_part;
@@ -97,6 +150,54 @@ namespace ad {
         gradient_at(const std::function<dual_number(dual_number,dual_number)>& f,double x,double y);
     };
 
+
+    bool operator == (double x,const dual_number &dual){
+        return x == dual._real_part;
+    }
+
+    bool operator == (const dual_number &dual,double x){
+        return x == dual._real_part;
+    }
+
+    bool operator != (double x,const dual_number &dual){
+        return x != dual._real_part;
+    }
+
+    bool operator != (const dual_number &dual,double x){
+        return x != dual._real_part;
+    }
+
+    bool operator < (double x,const dual_number &dual){
+        return x < dual._real_part;
+    }
+
+    bool operator < (const dual_number &dual,double x){
+        return x < dual._real_part;
+    }
+
+    bool operator <= (double x,const dual_number &dual){
+        return x <= dual._real_part;
+    }
+
+    bool operator <= (const dual_number &dual,double x){
+        return x <= dual._real_part;
+    }
+
+    bool operator > (double x,const dual_number &dual){
+        return x > dual._real_part;
+    }
+
+    bool operator > (const dual_number &dual,double x){
+        return x > dual._real_part;
+    }
+
+    bool operator >= (double x,const dual_number &dual){
+        return x >= dual._real_part;
+    }
+
+    bool operator >= (const dual_number &dual,double x){
+        return x >= dual._real_part;
+    }
 
     dual_number operator+(const  dual_number &l, const  dual_number &r) {
         return dual_number{l._real_part + r._real_part, l._dual_part + r._dual_part};

@@ -3,4 +3,4 @@ project(autodiff)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(autodiff main.cpp auto_diff/forward/dual.h auto_diff/auto_diff.h)
+add_executable(autodiff main.cpp auto_diff/forward/dual.h auto_diff/auto_diff.h auto_diff/reverse/node.h)

@@ -1,13 +1,13 @@
 #include <iostream>
 #include "auto_diff/auto_diff.h"
 
-using dual = ad::dual_number;
+using Double = ad::differentiable_var<ad::differential_mode::FORWARD>;
 
-dual func(dual x){
+Double func(Double x){
     return 4.0*ad::pow(x,2.0)+5.0;
 }
 
-dual func1(dual x){
+Double func1(Double x){
     return 3*ad::pow(func(x),2.0)+1;
 }
 
@@ -20,12 +20,12 @@ double func1_dx_truth(double x){
     return 192*x*x*x + 240*x;
 }
 
-dual g(dual x){
+Double g(Double x){
     return 0.01*pow(x,4)+pow(3,x)+0.001*pow(x,2);
 }
 
 template<bool silence = true>
-std::pair<double,double> gradient_descent_optimizer(const std::function<dual(dual)>& f,double init,double threshold,double step_length){
+std::pair<double,double> gradient_descent_optimizer(const std::function<Double(Double)>& f, double init, double threshold, double step_length){
     auto x = init;
 
     auto [output,grad] = ad::gradient_at(f,x);
@@ -44,8 +44,39 @@ std::pair<double,double> gradient_descent_optimizer(const std::function<dual(dua
     return {output,x};
 }
 
-dual func2D(dual x, dual y){
-    return x*x + y*y*y;
+Double func2D(Double x, Double y){
+    return pow(x-2,2) + pow(y-1,4)+10.0;
+}
+
+template<bool silence = true>
+std::pair<double,std::pair<double,double>> gradient_descent_optimizer(const std::function<Double(Double, Double)>& f, double init_x, double init_y, double threshold, double step_length){
+    auto x = init_x;
+    auto y = init_y;
+
+    uint descent_axis = 0;
+    auto [output,grad] = ad::gradient_at(f,x,y);
+
+    while(std::abs(grad.first)>threshold||std::abs(grad.second)>threshold){
+
+        if(descent_axis == 0){
+            x -= step_length * grad.first;
+        }else{
+            y -= step_length * grad.second;
+        }
+
+        descent_axis = (descent_axis+1)%2;
+
+        auto new_result = ad::gradient_at(f,x,y);
+
+        output = new_result.first;
+        grad = new_result.second;
+
+        if constexpr (!silence){
+            std::cout << output <<" , "<<"["<<grad.first<<","<<grad.second<<"]"<<" , "<<"["<<x<<","<<y<<"]"<< std::endl;
+        }
+    }
+
+    return {output,{x,y}};
 }
 
 int main() {
@@ -59,13 +90,17 @@ int main() {
 
     std::cout << output <<","<<dx<< std::endl;
 
-    auto [minimum,xx] = gradient_descent_optimizer<false>(g,3,1e-10,0.0001);
+    auto [minimum,xx] = gradient_descent_optimizer<true>(g,3,1e-10,0.0001);
 
     std::cout << minimum <<" at "<<xx<< std::endl;
 
     auto[output1,grad] = ad::gradient_at(func2D,2,2);
 
     std::cout << output1 <<","<<"["<<grad.first<<","<<grad.second<<"]"<< std::endl;
+
+    auto [minimum1,xxyy] = gradient_descent_optimizer<true>(func2D,3,3,1e-6,0.01);
+
+    std::cout<<minimum1<<" at "<<"["<<xxyy.first<<","<<xxyy.second<<"]"<< std::endl;
 
     return 0;
 }

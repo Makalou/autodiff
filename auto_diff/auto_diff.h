@@ -128,13 +128,13 @@ namespace ad{
         return detail::dvr{l._node+r._node};
     }
 
-    std::pair<double,double> gradient_at(const std::function<detail::dvf( detail::dvf)>& f,double x){
+    static inline std::pair<double,double> gradient_at(const std::function<detail::dvf( detail::dvf)>& f,double x){
         auto u_dual = detail::dvf{ad::dual_number{x,1}};
         auto res = f(u_dual)._dual;
         return {res._real_part,res._dual_part};
     }
 
-    std::pair<double,std::pair<double,double>> gradient_at(const std::function< detail::dvf( detail::dvf, detail::dvf)>& f,double x,double y){
+    static inline std::pair<double,std::pair<double,double>> gradient_at(const std::function< detail::dvf( detail::dvf, detail::dvf)>& f,double x,double y){
 
         auto dfdx = f(detail::dvf{dual_number{x,1}},detail::dvf{dual_number{y,0}})._dual;
         auto dfdy = f(detail::dvf{dual_number{x,0}},detail::dvf{dual_number{y,1}})._dual;

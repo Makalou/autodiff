@@ -55,6 +55,7 @@ namespace ad{
 
     };
 
+    /*
     detail::nsp operator+(const detail::nsp& l,const detail::nsp& r){
         return std::make_shared<add_node>(l,r);
     }
@@ -65,6 +66,6 @@ namespace ad{
 
     detail::nsp operator+(const detail::nsp& l,double r){
         return l + std::make_shared<constant_node>(r);
-    }
+    }*/
 }
 #endif //AUTODIFF_NODE_H

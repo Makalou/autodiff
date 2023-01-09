@@ -142,13 +142,6 @@ namespace ad {
         dual_number acos(dual_number d);
         friend
         dual_number atan(dual_number d);
-
-        friend
-        std::pair<double,double>
-        gradient_at(const std::function<dual_number(dual_number)>& f,double x);
-        friend
-        std::pair<double,std::pair<double,double>>
-        gradient_at(const std::function<dual_number(dual_number,dual_number)>& f,double x,double y);
     };
 
     inline bool operator == (double x,const dual_number &dual){
@@ -294,21 +287,6 @@ namespace ad {
     inline dual_number atan( dual_number d){
         auto dx = 1/(1+d._real_part*d._real_part);
         return dual_number{std::atan(d._real_part),dx*d._dual_part};
-    }
-
-    std::pair<double,double> gradient_at(const std::function< dual_number( dual_number)>& f,double x){
-        dual_number u_dual = ad::dual_number{x,1};
-        auto res = f(u_dual);
-        return {res._real_part,res._dual_part};
-    }
-
-    std::pair<double,std::pair<double,double>> gradient_at(const std::function< dual_number( dual_number, dual_number)>& f,double x,double y){
-
-        auto dfdx = f(dual_number{x,1},dual_number{y,0});
-        auto dfdy = f(dual_number{x,0},dual_number{y,1});
-
-        assert(dfdx._real_part == dfdy._real_part);
-        return {dfdx._real_part,{dfdx._dual_part,dfdy._dual_part}};
     }
 
 }//end namespace ad

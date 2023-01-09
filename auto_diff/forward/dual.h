@@ -151,147 +151,147 @@ namespace ad {
         gradient_at(const std::function<dual_number(dual_number,dual_number)>& f,double x,double y);
     };
 
-    bool operator == (double x,const dual_number &dual){
+    inline bool operator == (double x,const dual_number &dual){
         return x == dual._real_part;
     }
 
-    bool operator == (const dual_number &dual,double x){
+    inline bool operator == (const dual_number &dual,double x){
         return x == dual._real_part;
     }
 
-    bool operator != (double x,const dual_number &dual){
+    inline bool operator != (double x,const dual_number &dual){
         return x != dual._real_part;
     }
 
-    bool operator != (const dual_number &dual,double x){
+    inline bool operator != (const dual_number &dual,double x){
         return x != dual._real_part;
     }
 
-    bool operator < (double x,const dual_number &dual){
+    inline bool operator < (double x,const dual_number &dual){
         return x < dual._real_part;
     }
 
-    bool operator < (const dual_number &dual,double x){
+    inline bool operator < (const dual_number &dual,double x){
         return x < dual._real_part;
     }
 
-    bool operator <= (double x,const dual_number &dual){
+    inline bool operator <= (double x,const dual_number &dual){
         return x <= dual._real_part;
     }
 
-    bool operator <= (const dual_number &dual,double x){
+    inline bool operator <= (const dual_number &dual,double x){
         return x <= dual._real_part;
     }
 
-    bool operator > (double x,const dual_number &dual){
+    inline bool operator > (double x,const dual_number &dual){
         return x > dual._real_part;
     }
 
-    bool operator > (const dual_number &dual,double x){
+    inline bool operator > (const dual_number &dual,double x){
         return x > dual._real_part;
     }
 
-    bool operator >= (double x,const dual_number &dual){
+    inline bool operator >= (double x,const dual_number &dual){
         return x >= dual._real_part;
     }
 
-    bool operator >= (const dual_number &dual,double x){
+    inline bool operator >= (const dual_number &dual,double x){
         return x >= dual._real_part;
     }
 
-    dual_number operator+(const  dual_number &l, const  dual_number &r) {
+    inline dual_number operator+(const  dual_number &l, const  dual_number &r) {
         return dual_number{l._real_part + r._real_part, l._dual_part + r._dual_part};
     }
 
-    dual_number operator-(const  dual_number &l, const  dual_number &r) {
+    inline dual_number operator-(const  dual_number &l, const  dual_number &r) {
         return dual_number{l._real_part - r._real_part, l._dual_part - r._dual_part};
     }
 
-    dual_number operator*(const  dual_number &l, const  dual_number &r) {
+    inline dual_number operator*(const  dual_number &l, const  dual_number &r) {
         return dual_number{l._real_part * r._real_part, r._real_part * l._dual_part + l._real_part * r._dual_part};
     }
 
-    dual_number operator/(const  dual_number &l, const  dual_number &r) {
+    inline dual_number operator/(const  dual_number &l, const  dual_number &r) {
         return dual_number{l._real_part / r._real_part, r._real_part / l._dual_part + l._real_part / r._dual_part};
     }
 
-     dual_number operator+(double l, const  dual_number &r) {
+    inline dual_number operator+(double l, const  dual_number &r) {
         return dual_number{l + r._real_part, r._dual_part};
     }
 
-     dual_number operator-(double l, const  dual_number&r) {
+    inline dual_number operator-(double l, const  dual_number&r) {
         return dual_number{l - r._real_part, - r._dual_part};
     }
 
-     dual_number operator*(double l, const  dual_number &r) {
+    inline dual_number operator*(double l, const  dual_number &r) {
         return dual_number{l * r._real_part, l * r._dual_part};
     }
 
-     dual_number operator/(double l, const  dual_number &r) {
+    inline dual_number operator/(double l, const  dual_number &r) {
         return dual_number{l / r._real_part,  l / r._dual_part};
     }
 
-     dual_number operator+(const  dual_number &l, double r){
+    inline dual_number operator+(const  dual_number &l, double r){
         return dual_number{l._real_part + r, l._dual_part};
     }
 
-     dual_number operator-(const  dual_number &l, double r){
+    inline dual_number operator-(const  dual_number &l, double r){
         return dual_number{l._real_part - r, l._dual_part};
     }
 
-     dual_number operator*(const  dual_number &l, double r){
+    inline dual_number operator*(const  dual_number &l, double r){
         return dual_number{l._real_part * r, l._dual_part * r};
     }
 
-     dual_number operator/(const  dual_number &l, double r){
+    inline dual_number operator/(const  dual_number &l, double r){
         return dual_number{l._real_part / r,  l._dual_part / r};
     }
 
-     dual_number sin( dual_number d) {
+    inline dual_number sin( dual_number d) {
         return dual_number{std::sin(d._real_part),std::cos(d._real_part)*d._dual_part};
     }
 
-     dual_number cos( dual_number d) {
+    inline dual_number cos( dual_number d) {
         return dual_number{std::cos(d._real_part),-std::sin(d._real_part)*d._dual_part};
     }
 
-     dual_number tan( dual_number d) {
+    inline dual_number tan( dual_number d) {
         auto sec = 1/std::cos(d._real_part);
         auto sec2 = sec*sec;
         return dual_number{std::tan(d._real_part),sec2*d._dual_part};
     }
 
-     dual_number pow( dual_number d, double n){
+    inline dual_number pow( dual_number d, double n){
         return dual_number{std::pow(d._real_part,n),n*std::pow(d._real_part,n-1)*d._dual_part};
     }
 
-     dual_number pow(double a,  dual_number d){
+    inline dual_number pow(double a,  dual_number d){
         return dual_number{std::pow(a,d._real_part),std::log(a)*std::pow(a,d._real_part)*d._dual_part};
     }
 
-     dual_number sqrt( dual_number d){
+    inline dual_number sqrt( dual_number d){
         return dual_number{std::sqrt(d._real_part),0.5/std::sqrt(d._real_part)*d._dual_part};
     }
 
-     dual_number exp( dual_number d){
+    inline dual_number exp( dual_number d){
         return dual_number{std::exp(d._real_part),std::exp(d._real_part)*d._dual_part};
     }
 
-     dual_number ln( dual_number d){
+    inline dual_number ln( dual_number d){
         return dual_number{std::log(d._real_part),1/d._real_part*d._dual_part};
     }
 
-     dual_number asin( dual_number d){
+    inline dual_number asin( dual_number d){
         auto dx = 1/(std::sqrt(1-d._real_part*d._real_part));
         return dual_number{std::asin(d._real_part),dx*d._dual_part};
     }
 
-     dual_number acos( dual_number d){
+    inline dual_number acos( dual_number d){
         auto dx = -1/(std::sqrt(1-d._real_part*d._real_part));
         return dual_number{std::acos(d._real_part),dx*d._dual_part};
     }
 
-     dual_number atan( dual_number d){
+    inline dual_number atan( dual_number d){
         auto dx = 1/(1+d._real_part*d._real_part);
         return dual_number{std::atan(d._real_part),dx*d._dual_part};
     }

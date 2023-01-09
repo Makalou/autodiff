@@ -17,7 +17,7 @@ double func1_truth(double x){
 }
 
 double func1_dx_truth(double x){
-    return 192*x*x*x + 240*x;
+    return 192*pow(x,3) + 240*x;
 }
 
 Double g(Double x){
@@ -49,7 +49,8 @@ Double func2D(Double x, Double y){
 }
 
 template<bool silence = true>
-std::pair<double,std::pair<double,double>> gradient_descent_optimizer(const std::function<Double(Double, Double)>& f, double init_x, double init_y, double threshold, double step_length){
+std::pair<double,std::pair<double,double>>
+gradient_descent_optimizer(const std::function<Double(Double, Double)>& f, double init_x, double init_y, double threshold, double step_length){
     auto x = init_x;
     auto y = init_y;
 

@@ -6,6 +6,7 @@
 #define AUTODIFF_DUAL_H
 
 #include "numeric"
+#include <cmath>
 #include "../auto_diff.h"
 
 namespace ad {

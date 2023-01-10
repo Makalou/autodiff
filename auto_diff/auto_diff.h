@@ -5,6 +5,9 @@
 #ifndef AUTODIFF_AUTO_DIFF_H
 #define AUTODIFF_AUTO_DIFF_H
 
+#include <functional>
+#include <cassert>
+
 #include "forward/dual.h"
 #include "reverse/node.h"
 
@@ -25,10 +28,10 @@ namespace ad{
     template<>
     struct differentiable_var<differential_mode::REVERSE>{
         std::shared_ptr<differential_node> _node;
-        differentiable_var<differential_mode::REVERSE>(double v,uint idx){
+        differentiable_var(double v,uint idx){
             _node = std::make_shared<variable_node>(v,idx);
         }
-        differentiable_var<differential_mode::REVERSE>(const std::shared_ptr<differential_node>& node){
+        explicit differentiable_var<differential_mode::REVERSE>(const std::shared_ptr<differential_node>& node){
             _node = node;
         }
     };

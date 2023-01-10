@@ -35,7 +35,9 @@ namespace ad{
         }
 
         virtual double do_eval()=0;
+
         virtual bool depend_on(uint idx)= 0;
+
         virtual double derivative_for(uint idx)=0;
 
         friend

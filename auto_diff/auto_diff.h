@@ -25,6 +25,12 @@ namespace ad{
     template<>
     struct differentiable_var<differential_mode::REVERSE>{
         std::shared_ptr<differential_node> _node;
+        differentiable_var<differential_mode::REVERSE>(double v,uint idx){
+            _node = std::make_shared<variable_node>(v,idx);
+        }
+        differentiable_var<differential_mode::REVERSE>(const std::shared_ptr<differential_node>& node){
+            _node = node;
+        }
     };
 
     namespace detail{
@@ -32,101 +38,196 @@ namespace ad{
         using dvr = differentiable_var<differential_mode::REVERSE>;
     }
 
-    inline detail::dvf operator+(const  detail::dvf &l, const  detail::dvf &r) {
+    //Begin Forward Differential Variable Operator Overloading
+
+    inline detail::dvf operator+(const detail::dvf &l, const detail::dvf &r) {
         return detail::dvf{l._dual + r._dual};
     }
 
-    inline detail::dvf operator-(const  detail::dvf &l, const  detail::dvf &r) {
-        return detail::dvf{l._dual-r._dual};
+    inline detail::dvf operator-(const detail::dvf &l, const detail::dvf &r) {
+        return detail::dvf{l._dual - r._dual};
     }
 
-    inline detail::dvf operator*(const  detail::dvf &l, const  detail::dvf &r) {
-        return detail::dvf{l._dual*r._dual};
+    inline detail::dvf operator*(const detail::dvf &l, const detail::dvf &r) {
+        return detail::dvf{l._dual * r._dual};
     }
 
-    inline detail::dvf operator/(const  detail::dvf &l, const  detail::dvf &r) {
-        return detail::dvf{l._dual/r._dual};
+    inline detail::dvf operator/(const detail::dvf &l, const detail::dvf &r) {
+        return detail::dvf{l._dual / r._dual};
     }
 
-    inline detail::dvf operator+(double l, const  detail::dvf &r) {
-        return detail::dvf{l+r._dual};
+    inline detail::dvf operator+(double l, const detail::dvf &r) {
+        return detail::dvf{l + r._dual};
     }
 
-    inline detail::dvf operator-(double l, const  detail::dvf &r) {
-        return detail::dvf{l-r._dual};
+    inline detail::dvf operator-(double l, const detail::dvf &r) {
+        return detail::dvf{l - r._dual};
     }
 
-    inline detail::dvf operator*(double l, const  detail::dvf &r) {
-        return detail::dvf{l*r._dual};
+    inline detail::dvf operator*(double l, const detail::dvf &r) {
+        return detail::dvf{l * r._dual};
     }
 
-    inline detail::dvf operator/(double l, const  detail::dvf &r) {
-        return detail::dvf{l/r._dual};
+    inline detail::dvf operator/(double l, const detail::dvf &r) {
+        return detail::dvf{l / r._dual};
     }
 
-    inline detail::dvf operator+(const  detail::dvf &l, double r){
-        return detail::dvf{l._dual+r};
+    inline detail::dvf operator+(const detail::dvf &l, double r) {
+        return detail::dvf{l._dual + r};
     }
 
-    inline detail::dvf operator-(const  detail::dvf &l, double r){
-        return detail::dvf{l._dual-r};
+    inline detail::dvf operator-(const detail::dvf &l, double r) {
+        return detail::dvf{l._dual - r};
     }
 
-    inline detail::dvf operator*(const  detail::dvf &l, double r){
-        return detail::dvf{l._dual*r};
+    inline detail::dvf operator*(const detail::dvf &l, double r) {
+        return detail::dvf{l._dual * r};
     }
 
-    inline detail::dvf operator/(const  detail::dvf &l, double r){
-        return detail::dvf{l._dual/r};
+    inline detail::dvf operator/(const detail::dvf &l, double r) {
+        return detail::dvf{l._dual / r};
     }
 
-    inline detail::dvf sin( detail::dvf d) {
+    inline detail::dvf sin(detail::dvf d) {
         return detail::dvf{sin(d._dual)};
     }
 
-    inline detail::dvf cos( detail::dvf d) {
+    inline detail::dvf cos(detail::dvf d) {
         return detail::dvf{cos(d._dual)};
     }
 
-    inline detail::dvf tan( detail::dvf d) {
+    inline detail::dvf tan(detail::dvf d) {
         return detail::dvf{tan(d._dual)};
     }
 
-    inline detail::dvf pow( detail::dvf d, double n){
-        return detail::dvf{pow(d._dual,n)};
+    inline detail::dvf pow(detail::dvf d, double n) {
+        return detail::dvf{pow(d._dual, n)};
     }
 
-    inline detail::dvf pow(double a,  detail::dvf d){
-        return detail::dvf{pow(a,d._dual)};
+    inline detail::dvf pow(double a, detail::dvf d) {
+        return detail::dvf{pow(a, d._dual)};
     }
 
-    inline detail::dvf sqrt( detail::dvf d){
+    inline detail::dvf sqrt(detail::dvf d) {
         return detail::dvf{sqrt(d._dual)};
     }
 
-    inline detail::dvf exp( detail::dvf d){
+    inline detail::dvf exp(detail::dvf d) {
         return detail::dvf{exp(d._dual)};
     }
 
-    inline detail::dvf ln( detail::dvf d){
+    inline detail::dvf ln(detail::dvf d) {
         return detail::dvf{ln(d._dual)};
     }
 
-    inline detail::dvf asin( detail::dvf d){
+    inline detail::dvf asin(detail::dvf d) {
         return detail::dvf{asin(d._dual)};
     }
 
-    inline detail::dvf acos( detail::dvf d){
+    inline detail::dvf acos(detail::dvf d) {
         return detail::dvf{acos(d._dual)};
     }
 
-    inline detail::dvf atan( detail::dvf d){
+    inline detail::dvf atan(detail::dvf d) {
         return detail::dvf{atan(d._dual)};
     }
 
+    //END Forward Differential Variable Operator Overloading
+
+    //Begin Reverse Differential Variable Operator Overloading
     inline detail::dvr operator+(const  detail::dvr &l, const  detail::dvr &r){
         return detail::dvr{l._node+r._node};
     }
+
+    inline detail::dvr operator-(const detail::dvr &l, const detail::dvr &r) {
+        return detail::dvr{l._node - r._node};
+    }
+
+    inline detail::dvr operator*(const detail::dvr &l, const detail::dvr &r) {
+        return detail::dvr{l._node * r._node};
+    }
+
+    inline detail::dvr operator/(const detail::dvr &l, const detail::dvr &r) {
+        return detail::dvr{l._node / r._node};
+    }
+
+    inline detail::dvr operator+(double l, const detail::dvr &r) {
+        return detail::dvr{l + r._node};
+    }
+
+    inline detail::dvr operator-(double l, const detail::dvr &r) {
+        return detail::dvr{l - r._node};
+    }
+
+    inline detail::dvr operator*(double l, const detail::dvr &r) {
+        return detail::dvr{l * r._node};
+    }
+
+    inline detail::dvr operator/(double l, const detail::dvr &r) {
+        return detail::dvr{l / r._node};
+    }
+
+    inline detail::dvr operator+(const detail::dvr &l, double r) {
+        return detail::dvr{l._node + r};
+    }
+
+    inline detail::dvr operator-(const detail::dvr &l, double r) {
+        return detail::dvr{l._node - r};
+    }
+
+    inline detail::dvr operator*(const detail::dvr &l, double r) {
+        return detail::dvr{l._node * r};
+    }
+
+    inline detail::dvr operator/(const detail::dvr &l, double r) {
+        return detail::dvr{l._node / r};
+    }
+
+    inline detail::dvr sin(const detail::dvr& d) {
+        return detail::dvr{sin(d._node)};
+    }
+
+    inline detail::dvr cos(const detail::dvr& d) {
+        return detail::dvr{cos(d._node)};
+    }
+
+    inline detail::dvr tan(const detail::dvr& d) {
+        return detail::dvr{tan(d._node)};
+    }
+
+    inline detail::dvr pow(const detail::dvr& d, double n) {
+        return detail::dvr{pow(d._node, n)};
+    }
+
+    inline detail::dvr pow(double a, const detail::dvr& d) {
+        return detail::dvr{pow(a, d._node)};
+    }
+
+    inline detail::dvr sqrt(const detail::dvr& d) {
+        return detail::dvr{sqrt(d._node)};
+    }
+
+    inline detail::dvr exp(const detail::dvr& d) {
+        return detail::dvr{exp(d._node)};
+    }
+
+    inline detail::dvr ln(const detail::dvr& d) {
+        return detail::dvr{ln(d._node)};
+    }
+
+    inline detail::dvr asin(const detail::dvr& d) {
+        return detail::dvr{asin(d._node)};
+    }
+
+    inline detail::dvr acos(const detail::dvr& d) {
+        return detail::dvr{acos(d._node)};
+    }
+
+    inline detail::dvr atan(const detail::dvr& d) {
+        return detail::dvr{atan(d._node)};
+    }
+
+    //End Reverse Differential Variable Operator Overloading
 
     static inline std::pair<double,double> gradient_at(const std::function<detail::dvf( detail::dvf)>& f,double x){
         auto u_dual = detail::dvf{ad::dual_number{x,1}};

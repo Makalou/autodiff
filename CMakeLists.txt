@@ -3,6 +3,8 @@ project(autodiff)
 
 set(CMAKE_CXX_STANDARD 20)
 
+add_executable(lab lab.cpp)
+
 add_subdirectory(3rd_party/googletest)
 
 add_subdirectory(tests)

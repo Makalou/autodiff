@@ -50,10 +50,20 @@ namespace ad{
 
     namespace detail{
         using nsp = std::shared_ptr<differential_node>;
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+=======
+        using nup = std::unique_ptr<differential_node>;
+>>>>>>> Stashed changes
 
         inline nsp make_differential_node(differential_node&& node){
             return std::make_shared<differential_node>(node);
         }
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     }
 
     struct constant_node{

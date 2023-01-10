@@ -7,7 +7,7 @@
 
 using Double = ad::differentiable_var<ad::differential_mode::FORWARD>;
 
-inline Double func2D(Double x, Double y){
+inline Double target2D(Double x, Double y){
     return pow(x-2,2) + pow(y-1,4)+10.0;
 }
 
@@ -17,7 +17,7 @@ gradient_descent_optimizer(const std::function<Double(Double, Double)>& f, doubl
     auto x = init_x;
     auto y = init_y;
 
-    uint descent_axis = 0;
+    unsigned int descent_axis = 0;
     auto [output,grad] = ad::gradient_at(f,x,y);
 
     while(std::abs(grad.first)>threshold||std::abs(grad.second)>threshold){
@@ -45,7 +45,7 @@ gradient_descent_optimizer(const std::function<Double(Double, Double)>& f, doubl
 
 TEST(ScalarFunction2DOptimization, BasicAssertions) {
 
-    auto [minimum,xxyy] = gradient_descent_optimizer(func2D,3,3,1e-6,0.01);
+    auto [minimum,xxyy] = gradient_descent_optimizer(target2D,3,3,1e-6,0.01);
 
     EXPECT_LT(abs(10-minimum),1e-5);
     EXPECT_LT(abs(2-xxyy.first),1e-2);

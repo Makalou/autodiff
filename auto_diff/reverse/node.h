@@ -16,6 +16,8 @@ namespace ad{
         using nsp = std::shared_ptr<differential_node>;
     }
 
+    using uint = unsigned int;
+
     struct differential_node{
     public:
         detail::nsp _l;

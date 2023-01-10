@@ -11,6 +11,11 @@
 
 ### Reverse mode & Compute graph
 ### Forward or Reverse?
+- Do foward mode and reverse mode have any numeric accuracy difference?
+  - No.
+- Which mode should I choose when the target function has both inputs and outputs in really high dimension?
+  - Under this case unfortunately neither **forward** nor **reverse** mode could be expected to execute efficiently. 
+    The computing graph is complex so neither forward nor backward traverse can help.
 
 ## High Performance Computing
 

@@ -27,11 +27,13 @@ namespace ad{
 
     template<>
     struct differentiable_var<differential_mode::REVERSE>{
-        std::shared_ptr<differential_node> _node;
+        detail::nsp _node;
+
         differentiable_var(double v,uint idx){
-            _node = std::make_shared<variable_node>(v,idx);
+            _node = std::make_shared<differential_node>(variable_node{v,idx});
         }
-        explicit differentiable_var<differential_mode::REVERSE>(const std::shared_ptr<differential_node>& node){
+
+        explicit differentiable_var<differential_mode::REVERSE>(const detail::nsp& node){
             _node = node;
         }
     };
@@ -250,14 +252,15 @@ namespace ad{
     static std::pair<double,double> gradient_at(const std::function<detail::dvr( detail::dvr)>& f,double x){
         detail::dvr _x {x,0};
         auto z = f(_x);
-        return {z._node->eval(),z._node->derivative_for(0)};
+        return {detail::eval(*z._node),detail::derivative_for(*z._node,0)};
     }
 
     static std::pair<double,std::pair<double,double>> gradient_at(const std::function<detail::dvr( detail::dvr, detail::dvr)>& f,double x,double y){
-        detail::dvr _x {x,0};
-        detail::dvr _y {y,1};
-        auto z = f(_x,_y);
-        return {z._node->eval(),{z._node->derivative_for(0),z._node->derivative_for(1)}};
+        auto z = f({x,0},{y,1});
+        auto out = detail::eval(*z._node);
+        auto dfdx = detail::derivative_for(*z._node,0);
+        auto dfdy = detail::derivative_for(*z._node,1);
+        return {out,{dfdx,dfdy}};
     }
 
 }

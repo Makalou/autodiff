@@ -5,7 +5,7 @@
 #include "../auto_diff/auto_diff.h"
 #include <random>
 
-using Double = ad::differentiable_var<ad::differential_mode::FORWARD>;
+using Double = ad::differentiable_var<ad::differential_mode::REVERSE>;
 
 inline Double target2D(Double x, Double y){
     return pow(x-2,2) + pow(y-1,4)+10.0;

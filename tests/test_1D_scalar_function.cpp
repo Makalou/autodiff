@@ -25,6 +25,18 @@ double func1_dx_truth(double x){
     return 192*pow(x,3) + 240*x;
 }
 
+Double xpowx(Double x){
+    return ad::pow(x,x);
+}
+
+double xpowx_truth(double x){
+    return std::pow(x,x);
+}
+
+double xpowx_dx_truth(double x){
+    return pow(x,x)*(log(x)+1);
+}
+
 TEST(ScalarFunction1D, BasicAssertions) {
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -35,6 +47,15 @@ TEST(ScalarFunction1D, BasicAssertions) {
         auto res = ad::gradient_at(func1,x);
         EXPECT_DOUBLE_EQ(res.first,func1_truth(x));
         EXPECT_DOUBLE_EQ(res.second, func1_dx_truth(x));
-
     }
+
+    dis = std::uniform_real_distribution<double>(0.00001, 100.0);
+
+    for (int n = 0; n < 100; ++n) {
+        double x = dis(gen);
+        auto res = ad::gradient_at(xpowx,x);
+        EXPECT_DOUBLE_EQ(res.first, xpowx_truth(x));
+        EXPECT_DOUBLE_EQ(res.second, xpowx_dx_truth(x));
+    }
+
 }

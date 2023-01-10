@@ -111,6 +111,10 @@ namespace ad{
         return detail::dvf{pow(a, d._dual)};
     }
 
+    inline detail::dvf pow(detail::dvf d1, detail::dvf d2){
+        return detail::dvf{pow(d1._dual, d2._dual)};
+    }
+
     inline detail::dvf sqrt(detail::dvf d) {
         return detail::dvf{sqrt(d._dual)};
     }

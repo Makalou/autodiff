@@ -5,6 +5,9 @@
 #ifndef AUTODIFF_AUTO_DIFF_H
 #define AUTODIFF_AUTO_DIFF_H
 
+#include <functional>
+#include <cassert>
+
 #include "forward/dual.h"
 #include "reverse/node.h"
 

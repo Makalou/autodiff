@@ -229,13 +229,13 @@ namespace ad{
 
     //End Reverse Differential Variable Operator Overloading
 
-    static inline std::pair<double,double> gradient_at(const std::function<detail::dvf( detail::dvf)>& f,double x){
+    static std::pair<double,double> gradient_at(const std::function<detail::dvf( detail::dvf)>& f,double x){
         auto u_dual = detail::dvf{ad::dual_number{x,1}};
         auto res = f(u_dual)._dual;
         return {res._real_part,res._dual_part};
     }
 
-    static inline std::pair<double,std::pair<double,double>> gradient_at(const std::function< detail::dvf( detail::dvf, detail::dvf)>& f,double x,double y){
+    static std::pair<double,std::pair<double,double>> gradient_at(const std::function<detail::dvf( detail::dvf, detail::dvf)>& f,double x,double y){
 
         auto dfdx = f(detail::dvf{dual_number{x,1}},detail::dvf{dual_number{y,0}})._dual;
         auto dfdy = f(detail::dvf{dual_number{x,0}},detail::dvf{dual_number{y,1}})._dual;
@@ -243,5 +243,19 @@ namespace ad{
         assert(dfdx._real_part == dfdy._real_part);
         return {dfdx._real_part,{dfdx._dual_part,dfdy._dual_part}};
     }
+
+    static std::pair<double,double> gradient_at(const std::function<detail::dvr( detail::dvr)>& f,double x){
+        detail::dvr _x {x,0};
+        auto z = f(_x);
+        return {z._node->eval(),z._node->derivative_for(0)};
+    }
+
+    static std::pair<double,std::pair<double,double>> gradient_at(const std::function<detail::dvr( detail::dvr, detail::dvr)>& f,double x,double y){
+        detail::dvr _x {x,0};
+        detail::dvr _y {y,1};
+        auto z = f(_x,_y);
+        return {z._node->eval(),{z._node->derivative_for(0),z._node->derivative_for(1)}};
+    }
+
 }
 #endif //AUTODIFF_AUTO_DIFF_H

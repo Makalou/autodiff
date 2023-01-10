@@ -18,6 +18,9 @@
     The computing graph is complex so neither forward nor backward traverse can help.
 
 ## High Performance Computing
+### Multi-threading
+### SIMD
+### GPU Acceleration
 
 ---
 ## Todo List

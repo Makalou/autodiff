@@ -13,3 +13,10 @@
 ### Forward or Reverse?
 
 ## High Performance Computing
+
+---
+## Todo List
+- [ ] variadic arguments for ```gradient_at``` function
+- [ ] optimization for reverse mode compute graph storage and traverse
+- [ ] parallel computing
+

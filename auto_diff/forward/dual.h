@@ -44,31 +44,6 @@ namespace ad {
             return _real_part >= other._real_part;
         }
 
-        friend
-        bool operator == (double x,const dual_number &dual);
-        friend
-        bool operator == (const dual_number &dual,double x);
-        friend
-        bool operator != (double x,const dual_number &dual);
-        friend
-        bool operator != (const dual_number &dual,double x);
-        friend
-        bool operator < (double x,const dual_number &dual);
-        friend
-        bool operator < (const dual_number &dual,double x);
-        friend
-        bool operator <= (double x,const dual_number &dual);
-        friend
-        bool operator <= (const dual_number &dual,double x);
-        friend
-        bool operator > (double x,const dual_number &dual);
-        friend
-        bool operator > (const dual_number &dual,double x);
-        friend
-        bool operator >= (double x,const dual_number &dual);
-        friend
-        bool operator >= (const dual_number &dual,double x);
-
         // Basic algebra operation
         dual_number operator-() const{
             return dual_number{-_real_part,_dual_part};
@@ -94,55 +69,6 @@ namespace ad {
             _dual_part = other._real_part / _dual_part + _real_part / other._dual_part;
         }
 
-        friend
-        dual_number operator+(const dual_number &l, const dual_number &r);
-        friend
-        dual_number operator-(const dual_number &l, const dual_number &r);
-        friend
-        dual_number operator*(const dual_number &l, const dual_number &r);
-        friend
-        dual_number operator/(const dual_number &l, const dual_number &r);
-
-        friend
-        dual_number operator+(double l, const dual_number &r);
-        friend
-        dual_number operator-(double l, const dual_number &r);
-        friend
-        dual_number operator*(double l, const dual_number &r);
-        friend
-        dual_number operator/(double l, const dual_number &r);
-        friend
-        dual_number operator+(const dual_number &l, double r);
-        friend
-        dual_number operator-(const dual_number &l, double r);
-        friend
-        dual_number operator*(const dual_number &l, double r);
-        friend
-        dual_number operator/(const dual_number &l, double r);
-
-        // Basic function
-        friend
-        dual_number sin(dual_number d);
-        friend
-        dual_number cos(dual_number d);
-        friend
-        dual_number tan(dual_number d);
-        friend
-        dual_number pow(dual_number d, double x);
-        friend
-        dual_number pow(double x, dual_number d);
-        friend
-        dual_number sqrt(dual_number d);
-        friend
-        dual_number exp(dual_number d);
-        friend
-        dual_number ln(dual_number d);
-        friend
-        dual_number asin(dual_number d);
-        friend
-        dual_number acos(dual_number d);
-        friend
-        dual_number atan(dual_number d);
     };
 
     inline bool operator == (double x,const dual_number &dual){

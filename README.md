@@ -1,8 +1,12 @@
 # Automatic Differentiation
 
 ## Why AD programming matters?
-
+[Automatic differentiation](https://en.wikipedia.org/wiki/Automatic_differentiation)(AD), or autodiff for short, can evaluate the derivative of a function specified by a computer program
+automatically. Which means, once you write down your function in C++ code, you don't have to suffer from the intricate and error-prone
+derivative deduction on the paper, then code the result manually. All you need to do is passing the function to autodiff library, and 
+get its derivative or gradient whenever you want :) !
 ### Optimization & Gradient Descent Method
+
 ### Other Applications
 
 ## Automatic Differentiation Mode

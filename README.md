@@ -38,4 +38,5 @@ such problems is [gradient descent](https://en.wikipedia.org/wiki/Gradient_desce
 - [ ] variadic arguments for ```gradient_at``` function
 - [ ] optimization for reverse mode compute graph storage and traverse
 - [ ] parallel computing
+- [ ] compile-time differentiation
 

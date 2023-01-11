@@ -263,6 +263,10 @@ namespace ad {
         return dual_number{std::pow(a,d._real_part),std::log(a)*std::pow(a,d._real_part)*d._dual_part};
     }
 
+    inline dual_number pow(dual_number d1,dual_number d2){
+        return dual_number{std::pow(d1._real_part,d2._real_part),(pow(d1._real_part,d2)+ pow(d1,d2._real_part))._dual_part};
+    }
+
     inline dual_number sqrt( dual_number d){
         return dual_number{std::sqrt(d._real_part),0.5/std::sqrt(d._real_part)*d._dual_part};
     }

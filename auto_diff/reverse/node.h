@@ -50,7 +50,7 @@ namespace ad{
 
     namespace detail{
         using nsp = std::shared_ptr<differential_node>;
-        using nup = std::unique_ptr<differential_node>;
+        //using nup = std::unique_ptr<differential_node>;
 
         inline nsp make_differential_node(differential_node&& node){
             return std::make_shared<differential_node>(node);
@@ -115,8 +115,8 @@ namespace ad{
     };
 
     struct exp_node{
-        double _base;
-        bool is_base_e;
+        double _base{};
+        bool is_base_e{false};
 
         detail::nsp _l;
 
@@ -267,10 +267,10 @@ namespace ad{
 
         static double derivative_for(const differential_node& node, unsigned int idx){
             return std::visit(overloaded{
-                    [idx](const auto& node){
+                    [](const auto& node){
                         return 0.0;
                     },
-                    [idx](const constant_node& node){
+                    [](const constant_node& node){
                         return 0.0;
                     },
                     [idx](const variable_node& node){

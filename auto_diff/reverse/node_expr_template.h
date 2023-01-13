@@ -226,7 +226,7 @@ namespace ad::expr_template{
         struct sin_node : expr_node<sin_node<E>>{
             const E & _l;
 
-            sin_node(E const& l) : _l(l){ }
+            explicit sin_node(E const& l) : _l(l){ }
 
             double eval() const{
                 return std::sin(_l.eval());
@@ -241,7 +241,7 @@ namespace ad::expr_template{
         struct cos_node : expr_node<cos_node<E>>{
             const E & _l;
 
-            cos_node(E const& l) : _l(l){ }
+            explicit cos_node(E const& l) : _l(l){ }
 
             double eval() const{
                 return std::cos(_l.eval());
@@ -256,7 +256,7 @@ namespace ad::expr_template{
         struct tan_node : expr_node<tan_node<E>>{
             const E & _l;
 
-            tan_node(E const& l) : _l(l){ }
+            explicit tan_node(E const& l) : _l(l){ }
 
             double eval() const{
                 return std::tan(_l.eval());
@@ -287,7 +287,7 @@ namespace ad::expr_template{
         struct sqrt_node : expr_node<sqrt_node<E>>{
             const E & _l;
 
-            sqrt_node(E const& l) : _l(l){ }
+            explicit sqrt_node(E const& l) : _l(l){ }
 
             double eval()const {
                 return std::sqrt(_l.eval());
@@ -304,7 +304,7 @@ namespace ad::expr_template{
             bool is_base_e{false};
             double _base{};
 
-            exp_node(E const& l) : _l(l),is_base_e(true){ }
+            explicit exp_node(E const& l) : _l(l),is_base_e(true){ }
 
             exp_node(double base, E const& l):_l(l),_base(base){}
 
@@ -321,7 +321,7 @@ namespace ad::expr_template{
         struct ln_node : expr_node<ln_node<E>>{
             const E & _l;
 
-            ln_node(E const& l) : _l(l){ }
+            explicit ln_node(E const& l) : _l(l){ }
 
             double eval() const{
                 return std::log(_l.eval());
@@ -336,7 +336,7 @@ namespace ad::expr_template{
         struct asin_node : expr_node<asin_node<E>>{
             const E & _l;
 
-            asin_node(E const& l) : _l(l){ }
+            explicit asin_node(E const& l) : _l(l){ }
 
             double eval() const{
                 return std::asin(_l.eval());
@@ -351,7 +351,7 @@ namespace ad::expr_template{
         struct acos_node : expr_node<acos_node<E>>{
             const E & _l;
 
-            acos_node(E const& l) : _l(l){ }
+            explicit acos_node(E const& l) : _l(l){ }
 
             double eval() const{
                 return std::acos(_l.eval());
@@ -366,7 +366,7 @@ namespace ad::expr_template{
         struct atan_node : expr_node<atan_node<E>>{
             const E & _l;
 
-            atan_node(E const& l) : _l(l){ }
+            explicit atan_node(E const& l) : _l(l){ }
 
             double eval() const{
                 return std::atan(_l.eval());

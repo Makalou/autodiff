@@ -50,7 +50,6 @@ namespace ad{
 
     namespace detail{
         using nsp = std::shared_ptr<differential_node>;
-        //using nup = std::unique_ptr<differential_node>;
 
         inline nsp make_differential_node(differential_node&& node){
             return std::make_shared<differential_node>(node);

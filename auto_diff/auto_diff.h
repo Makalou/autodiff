@@ -29,6 +29,8 @@ namespace ad{
     struct differentiable_var<differential_mode::REVERSE>{
         detail::nsp _node;
 
+        differentiable_var() = default;
+
         differentiable_var(double v,uint idx){
             _node = std::make_shared<differential_node>(variable_node{v,idx});
         }
@@ -36,6 +38,7 @@ namespace ad{
         explicit differentiable_var<differential_mode::REVERSE>(const detail::nsp& node){
             _node = node;
         }
+
     };
 
     namespace detail{
@@ -244,13 +247,39 @@ namespace ad{
         return {res._real_part,res._dual_part};
     }
 
-    static std::pair<double,std::pair<double,double>> gradient_at(const std::function<detail::dvf( detail::dvf, detail::dvf)>& f,double x,double y){
+    static std::pair<double,std::pair<double,double>> gradient_at(const std::function<detail::dvf(detail::dvf, detail::dvf)>& f,double x,double y){
 
         auto dfdx = f(detail::dvf{dual_number{x,1}},detail::dvf{dual_number{y,0}})._dual;
         auto dfdy = f(detail::dvf{dual_number{x,0}},detail::dvf{dual_number{y,1}})._dual;
 
         assert(dfdx._real_part == dfdy._real_part);
         return {dfdx._real_part,{dfdx._dual_part,dfdy._dual_part}};
+    }
+
+    //Really naive implementation...
+    template<int n>
+    static std::pair<double,std::array<double,n>> gradient_at(
+            const std::function<detail::dvf(std::array<detail::dvf,n>)>& f,
+            std::initializer_list<double> args){
+        std::array<double,n> grad{};
+
+        std::array<detail::dvf,n> aargs{};
+
+        std::transform(args.begin(),args.end(),aargs.begin(),[](const double arg){
+            return detail::dvf{dual_number{arg,0}};
+        });
+
+        double eval_result{};
+        for(int i =0;i<args.size();++i){
+            aargs[i]._dual._dual_part = 1;
+            auto dual = f(aargs)._dual;
+            aargs[i]._dual._dual_part = 0;
+            assert(eval_result == 0 || eval_result == dual._real_part);
+            eval_result = dual._real_part;
+            grad[i] = dual._dual_part;
+        }
+
+        return {eval_result, grad};
     }
 
     static std::pair<double,double> gradient_at(const std::function<detail::dvr( detail::dvr)>& f,double x){
@@ -265,6 +294,33 @@ namespace ad{
         auto dfdx = detail::derivative_for(*z._node,0);
         auto dfdy = detail::derivative_for(*z._node,1);
         return {out,{dfdx,dfdy}};
+    }
+
+    //Really naive implementation...
+    template<int n>
+    static std::pair<double,std::array<double,n>> gradient_at(
+            const std::function<detail::dvr(std::array<detail::dvr,n>)>& f,
+            std::initializer_list<double> args){
+
+        std::array<double,n> grad{};
+        std::array<detail::dvr,n> aargs;
+
+        unsigned int idx = 0;
+
+        for(const auto arg : args){
+            aargs[idx] = {arg,idx};
+            idx++;
+        }
+
+        auto z = f(aargs);
+
+        double eval_result = detail::eval(*z._node);
+
+        for(int i =0;i<args.size();++i){
+            grad[i] = detail::derivative_for(*z._node,i);
+        }
+
+        return {eval_result, grad};
     }
 
 }

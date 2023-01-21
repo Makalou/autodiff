@@ -17,6 +17,7 @@ namespace ad {
         double _real_part;
     public:
 
+        dual_number() = default;
         dual_number(double real_part,double dual_part): _real_part(real_part),_dual_part(dual_part){};
 
         //todo Caution : FP comparison

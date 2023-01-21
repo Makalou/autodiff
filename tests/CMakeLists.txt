@@ -9,7 +9,8 @@ list(APPEND tests
         test_2D_scalar_function.cpp
         test_1D_scalar_function.cpp
         test_1D_scalar_function_optimization.cpp
-        test_2D_scalar_function_optimization.cpp  )
+        test_2D_scalar_function_optimization.cpp
+        test_nD_scalar_function.cpp)
 
 add_executable(all_tests main.cpp ${tests})
 

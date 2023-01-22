@@ -6,11 +6,11 @@
 #include <random>
 #include <array>
 
-using Double = ad::differentiable_var<ad::differential_mode::REVERSE>;
+using Double = ad::differentiable_var<ad::differential_mode::FORWARD>;
 
-using Vector = std::array<Double,4>;
+using Vector4 = std::array<Double,4>;
 
-Double funcND(Vector v){
+Double funcND(Vector4 v){
     return v[0] + pow(v[1],2) + pow(v[2],3) + pow(v[3],4);
 }
 

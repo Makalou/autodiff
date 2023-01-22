@@ -257,10 +257,11 @@ namespace ad{
     }
 
     //Really naive implementation...
+
     template<int n>
     static std::pair<double,std::array<double,n>> gradient_at(
             const std::function<detail::dvf(std::array<detail::dvf,n>)>& f,
-            std::initializer_list<double> args){
+            std::array<double,n> args){
         std::array<double,n> grad{};
 
         std::array<detail::dvf,n> aargs{};
@@ -280,6 +281,19 @@ namespace ad{
         }
 
         return {eval_result, grad};
+    }
+
+    template<int n>
+    static std::pair<double,std::array<double,n>> gradient_at(
+            const std::function<detail::dvf(std::array<detail::dvf,n>)>& f,
+            std::initializer_list<double> args){
+
+        std::array<double,n> arr{};
+        int i = 0;
+        for(double arg : args){
+            arr[i++] = arg;
+        }
+        return gradient_at<n>(f,arr);
     }
 
     static std::pair<double,double> gradient_at(const std::function<detail::dvr( detail::dvr)>& f,double x){

@@ -13,8 +13,8 @@ namespace ad {
 
     struct dual_number {
     public:
-        double _dual_part;
-        double _real_part;
+        double _dual_part{0};
+        double _real_part{0};
     public:
 
         dual_number() = default;

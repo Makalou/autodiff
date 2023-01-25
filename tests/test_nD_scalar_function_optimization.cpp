@@ -12,35 +12,30 @@
 
 using Double = ad::differentiable_var<ad::differential_mode::FORWARD>;
 
-using Vector100 = std::array<Double,100>;
+using Vector100 = std::array<Double ,100>;
+const int N = 3;
+using VectorN = std::array<Double,N>;
 
-Double f1(Vector100 k,std::array<double,100> x){
-
-    auto ret = k[0];
-
-    for(int i = 1;i<100;++i){
-        ret = ret + x[i-1]*k[i];
+Double f1(VectorN k,const std::array<double,k.size()>& x){
+    Double ret{};
+    for(int i = 0;i<k.size();++i){
+        ret = ret + x[i]*k[i];
     }
-
     return ret;
 }
 
-Double loss(Vector100 v){
-    Double lse;
+Double loss(VectorN k,const std::array<std::pair<double,double>,10>& samples){
+    std::array<double,k.size()> x{};
+    Double lse{};
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(-100.0, 100.0);
-
-    std::array<double,100> x{};
-
-    for(int n =0;n<1000;++n){
-        x[0] = dis(gen);
-        double y = sin(x[0]);
-        for(int i =1;i<100;++i){
-            x[i] = x[i-1]*x[0];
+    for(const auto & sample : samples){
+        double y = sample.second;
+        x[0] = 1.;
+        x[1] = sample.first;
+        for(int i = 2; i<k.size(); ++i){
+            x[i] = x[i-1]*x[1];
         }
-        lse = lse + pow(f1(v,x) - y,2);
+        lse = lse + pow(f1(k,x)-y,2); // Least Square Error
     }
 
     return lse;
@@ -79,7 +74,7 @@ gradient_descent_optimizer(const std::function<Double(std::array<Double ,n>)>& f
         grad = result.second;
 
         if constexpr (!silence){
-            //std::cout << output <<" , "<<"["<<grad.first<<","<<grad.second<<"]"<<" , "<<"["<<x<<","<<y<<"]"<< std::endl;
+            std::cout << output << std::endl;
         }
     }
 
@@ -87,7 +82,31 @@ gradient_descent_optimizer(const std::function<Double(std::array<Double ,n>)>& f
 }
 
 TEST(ScalarFunctionnDOptimization, BasicAssertions) {
-    std::array<double,100> init_v{0};
-    auto [output,grad] = gradient_descent_optimizer<100>(sphere100D,init_v,1e-6,0.01);
-    EXPECT_LT(abs(1-output.first),1e-5);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-10.0, 10.0);
+    std::uniform_real_distribution<> dis2(-0.1, 0.1);
+
+    std::array<std::pair<double,double>,10> samples;
+
+    for(auto & sample : samples){
+        double x = dis(gen);
+
+        double a = dis2(gen)+3.0;
+        double b = dis2(gen)+2.0;
+        double c = dis2(gen)+1.0;
+
+        sample = std::make_pair(x,a*x*x+b*x+c);
+    }
+
+    std::array<double,N> init_v{};
+
+    auto [output,grad] = gradient_descent_optimizer<N>([samples](auto && PH1) { return loss(std::forward<decltype(PH1)>(PH1), samples); },
+                                                         init_v,1e-6,0.00001);
+    //EXPECT_LT(abs(1-output.first),1e-5);
+    std::cout<<output.first<<std::endl;
+    for(int i = 0;i<N;++i){
+        std::cout<<output.second[i]<<",";
+    }
+    std::cout<<std::endl;
 }

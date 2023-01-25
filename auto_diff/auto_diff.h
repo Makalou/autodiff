@@ -288,6 +288,23 @@ namespace ad{
     }
 
     //Really naive implementation...
+    template<int n>
+    static std::pair<double,double> value_and_gradient_at(
+            const std::function<detail::dvf(std::array<detail::dvf,n>)>& f,
+            std::array<double,n> args,unsigned int grad_for){
+
+        std::array<detail::dvf,n> aargs{};
+
+        std::transform(args.begin(),args.end(),aargs.begin(),[](const double arg){
+            return detail::dvf{dual_number{arg,0}};
+        });
+
+        aargs[grad_for]._dual._dual_part = 1;
+
+        dual_number res = f(aargs)._dual;
+
+        return {res._real_part, res._dual_part};
+    }
 
     template<int n>
     static std::pair<double,std::array<double,n>> value_and_gradient_at(

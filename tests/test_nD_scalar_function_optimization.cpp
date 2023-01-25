@@ -63,7 +63,7 @@ gradient_descent_optimizer(const std::function<Double(std::array<Double ,n>)>& f
     auto v  = init_val;
 
     unsigned int descent_axis = 0;
-    auto result = ad::gradient_at<n>(f,v);
+    auto result = ad::value_and_gradient_at<n>(f,v);
     auto output = result.first;
     auto grad = result.second;
 
@@ -73,7 +73,7 @@ gradient_descent_optimizer(const std::function<Double(std::array<Double ,n>)>& f
 
         descent_axis = (descent_axis+1)%n;
 
-        result = ad::gradient_at<n>(f,v);
+        result = ad::value_and_gradient_at<n>(f,v);
 
         output = result.first;
         grad = result.second;

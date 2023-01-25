@@ -44,7 +44,7 @@ TEST(ScalarFunction1D, BasicAssertions) {
 
     for (int n = 0; n < 100; ++n) {
         double x = dis(gen);
-        auto res = ad::gradient_at(func1,x);
+        auto res = ad::value_and_gradient_at(func1,x);
         EXPECT_DOUBLE_EQ(res.first,func1_truth(x));
         EXPECT_DOUBLE_EQ(res.second, func1_dx_truth(x));
     }
@@ -53,7 +53,7 @@ TEST(ScalarFunction1D, BasicAssertions) {
 
     for (int n = 0; n < 100; ++n) {
         double x = dis(gen);
-        auto res = ad::gradient_at(xpowx,x);
+        auto res = ad::value_and_gradient_at(xpowx,x);
         EXPECT_DOUBLE_EQ(res.first, xpowx_truth(x));
         EXPECT_DOUBLE_EQ(res.second, xpowx_dx_truth(x));
     }

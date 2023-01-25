@@ -18,7 +18,7 @@ gradient_descent_optimizer(const std::function<Double(Double, Double)>& f, doubl
     auto y = init_y;
 
     unsigned int descent_axis = 0;
-    auto [output,grad] = ad::gradient_at(f,x,y);
+    auto [output,grad] = ad::value_and_gradient_at(f,x,y);
 
     while(std::abs(grad.first)>threshold||std::abs(grad.second)>threshold){
 
@@ -30,7 +30,7 @@ gradient_descent_optimizer(const std::function<Double(Double, Double)>& f, doubl
 
         descent_axis = (descent_axis+1)%2;
 
-        auto new_result = ad::gradient_at(f,x,y);
+        auto new_result = ad::value_and_gradient_at(f,x,y);
 
         output = new_result.first;
         grad = new_result.second;

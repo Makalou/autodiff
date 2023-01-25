@@ -16,11 +16,11 @@ template<bool silence = true>
 std::pair<double,double> gradient_descent_optimizer(const std::function<Double(Double)>& f, double init, double threshold, double step_length){
     auto x = init;
 
-    auto [output,grad] = ad::gradient_at(f,x);
+    auto [output,grad] = ad::value_and_gradient_at(f,x);
 
     while(std::abs(grad)>threshold){
         x -= step_length * grad;
-        auto new_result = ad::gradient_at(f,x);
+        auto new_result = ad::value_and_gradient_at(f,x);
 
         output = new_result.first;
         grad = new_result.second;

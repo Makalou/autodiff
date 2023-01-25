@@ -34,7 +34,7 @@ TEST(ScalarFunctionnD, BasicAssertions) {
         double z = dis(gen);
         double w = dis(gen);
 
-        auto res = ad::gradient_at<4>(funcND,{x,y,z,w});
+        auto res = ad::value_and_gradient_at<4>(funcND,{x,y,z,w});
 
         EXPECT_DOUBLE_EQ(res.first, funcND_truth(x,y,z,w));
 

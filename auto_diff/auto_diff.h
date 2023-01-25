@@ -242,14 +242,43 @@ namespace ad{
     }
 
     //End Reverse Differential Variable Operator Overloading
+    static double value_at(const std::function<detail::dvf( detail::dvf)>& f,double x){
+        auto u_dual = detail::dvf{ad::dual_number{x,1}};
+        auto res = f(u_dual)._dual;
+        return res._real_part;
+    }
 
-    static std::pair<double,double> gradient_at(const std::function<detail::dvf( detail::dvf)>& f,double x){
+    static double gradient_at(const std::function<detail::dvf( detail::dvf)>& f,double x){
+        auto u_dual = detail::dvf{ad::dual_number{x,1}};
+        auto res = f(u_dual)._dual;
+        return res._dual_part;
+    }
+
+    static std::pair<double,double> value_and_gradient_at(const std::function<detail::dvf( detail::dvf)>& f,double x){
         auto u_dual = detail::dvf{ad::dual_number{x,1}};
         auto res = f(u_dual)._dual;
         return {res._real_part,res._dual_part};
     }
 
-    static std::pair<double,std::pair<double,double>> gradient_at(const std::function<detail::dvf(detail::dvf, detail::dvf)>& f,double x,double y){
+    static double value_at(const std::function<detail::dvf(detail::dvf, detail::dvf)>& f,double x,double y){
+
+        auto dfdx = f(detail::dvf{dual_number{x,1}},detail::dvf{dual_number{y,0}})._dual;
+        auto dfdy = f(detail::dvf{dual_number{x,0}},detail::dvf{dual_number{y,1}})._dual;
+
+        assert(dfdx._real_part == dfdy._real_part);
+        return dfdx._real_part;
+    }
+
+    static std::pair<double,double> gradient_at(const std::function<detail::dvf(detail::dvf, detail::dvf)>& f,double x,double y){
+
+        auto dfdx = f(detail::dvf{dual_number{x,1}},detail::dvf{dual_number{y,0}})._dual;
+        auto dfdy = f(detail::dvf{dual_number{x,0}},detail::dvf{dual_number{y,1}})._dual;
+
+        assert(dfdx._real_part == dfdy._real_part);
+        return {dfdx._dual_part,dfdy._dual_part};
+    }
+
+    static std::pair<double,std::pair<double,double>> value_and_gradient_at(const std::function<detail::dvf(detail::dvf, detail::dvf)>& f,double x,double y){
 
         auto dfdx = f(detail::dvf{dual_number{x,1}},detail::dvf{dual_number{y,0}})._dual;
         auto dfdy = f(detail::dvf{dual_number{x,0}},detail::dvf{dual_number{y,1}})._dual;
@@ -261,7 +290,7 @@ namespace ad{
     //Really naive implementation...
 
     template<int n>
-    static std::pair<double,std::array<double,n>> gradient_at(
+    static std::pair<double,std::array<double,n>> value_and_gradient_at(
             const std::function<detail::dvf(std::array<detail::dvf,n>)>& f,
             std::array<double,n> args){
         std::array<double,n> grad{};
@@ -286,7 +315,7 @@ namespace ad{
     }
 
     template<int n>
-    static std::pair<double,std::array<double,n>> gradient_at(
+    static std::pair<double,std::array<double,n>> value_and_gradient_at(
             const std::function<detail::dvf(std::array<detail::dvf,n>)>& f,
             std::initializer_list<double> args){
 
@@ -295,16 +324,16 @@ namespace ad{
         for(double arg : args){
             arr[i++] = arg;
         }
-        return gradient_at<n>(f,arr);
+        return value_and_gradient_at<n>(f,arr);
     }
 
-    static std::pair<double,double> gradient_at(const std::function<detail::dvr( detail::dvr)>& f,double x){
+    static std::pair<double,double> value_and_gradient_at(const std::function<detail::dvr( detail::dvr)>& f,double x){
         detail::dvr _x {x,0};
         auto z = f(_x);
         return {detail::eval(*z._node),detail::derivative_for(*z._node,0)};
     }
 
-    static std::pair<double,std::pair<double,double>> gradient_at(const std::function<detail::dvr( detail::dvr, detail::dvr)>& f,double x,double y){
+    static std::pair<double,std::pair<double,double>> value_and_gradient_at(const std::function<detail::dvr( detail::dvr, detail::dvr)>& f,double x,double y){
         auto z = f({x,0},{y,1});
         auto out = detail::eval(*z._node);
         auto dfdx = detail::derivative_for(*z._node,0);
@@ -314,7 +343,7 @@ namespace ad{
 
     //Really naive implementation...
     template<int n>
-    static std::pair<double,std::array<double,n>> gradient_at(
+    static std::pair<double,std::array<double,n>> value_and_gradient_at(
             const std::function<detail::dvr(std::array<detail::dvr,n>)>& f,
             std::array<double,n> args){
 
@@ -328,7 +357,7 @@ namespace ad{
             idx++;
         }
 
-        auto z = f(aargs);
+        auto z = f(aargs); //todo How to cache this?
 
         double eval_result = detail::eval(*z._node);
 
@@ -340,7 +369,7 @@ namespace ad{
     }
 
     template<int n>
-    static std::pair<double,std::array<double,n>> gradient_at(
+    static std::pair<double,std::array<double,n>> value_and_gradient_at(
             const std::function<detail::dvr(std::array<detail::dvr,n>)>& f,
             std::initializer_list<double> args){
 

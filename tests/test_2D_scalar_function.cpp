@@ -29,7 +29,7 @@ TEST(ScalarFunction2D, BasicAssertions) {
         double x = dis(gen);
         double y = dis(gen);
 
-        auto res = ad::gradient_at(func2D,x,y);
+        auto res = ad::value_and_gradient_at(func2D,x,y);
 
         EXPECT_DOUBLE_EQ(res.first, func2D_truth(x,y));
 

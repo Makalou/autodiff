@@ -68,27 +68,41 @@ namespace ad{
     struct add_node{
         detail::nsp _l;
         detail::nsp _r;
+        double constant{};
+        add_node(detail::nsp  l, detail::nsp  r) : _l(std::move(l)),_r(std::move(r)){};
+        add_node(double l, detail::nsp  r) : constant(l),_r(std::move(r)){};
+        add_node(detail::nsp l, double  r) : _l(std::move(l)),constant(r){};
     };
 
     struct minus_node{
         detail::nsp _l;
         detail::nsp _r;
-
+        double constant{};
+        minus_node(detail::nsp  l, detail::nsp  r) : _l(std::move(l)),_r(std::move(r)){};
+        minus_node(double  l, detail::nsp  r) : constant(l),_r(std::move(r)){};
+        minus_node(detail::nsp l, double  r) : _l(std::move(l)),constant(r){};
     };
 
     struct multiply_node{
         detail::nsp _l;
         detail::nsp _r;
+        double constant{};
+        multiply_node(detail::nsp l, detail::nsp r):_l(std::move(l)),_r(std::move(r)){};
+        multiply_node(double l, detail::nsp r):constant(l),_r(std::move(r)){};
+        multiply_node(detail::nsp l, double r):_l(std::move(l)),constant(r){};
     };
 
     struct divide_node{
         detail::nsp _l;
         detail::nsp _r;
+        double constant{};
+        divide_node(detail::nsp l, detail::nsp r):_l(std::move(l)),_r(std::move(r)){};
+        divide_node(double l, detail::nsp r):constant(l),_r(std::move(r)){};
+        divide_node(detail::nsp l, double r):_l(std::move(l)),constant(r){};
     };
 
     struct sin_node{
         detail::nsp _l;
-
     };
 
     struct cos_node{
@@ -154,26 +168,51 @@ namespace ad{
 
         static double eval(const differential_node& node){
             return std::visit(overloaded{
-                    [](const auto& node){
-                        return 0.0;
-                        },
                     [](const constant_node& node){
                         return node.val;
                     },
                     [](const variable_node& node){
                         return node.val;
                     },
-                    [](const add_node& node){
-                        return eval(*node._l) + eval(*node._r);
-                        },
+                    [](const add_node& node) {
+                        if (node._l && node._r) {
+                            return eval(*node._l) + eval(*node._r);
+                        } else if (node._l) {
+                            return eval(*node._l) + node.constant;
+                        } else if (node._r) {
+                            return node.constant + eval(*node._l);
+                        }
+                        return 0.0;
+                    },
                     [](const minus_node& node){
-                        return eval(*node._l) - eval(*node._r);
+                        if (node._l && node._r) {
+                            return eval(*node._l) - eval(*node._r);
+                        } else if (node._l) {
+                            return eval(*node._l) - node.constant;
+                        } else if (node._r) {
+                            return node.constant - eval(*node._l);
+                        }
+                        return 0.0;
                         },
                     [](const multiply_node& node){
-                        return eval(*node._l) * eval(*node._r);
+                        if (node._l && node._r) {
+                            return eval(*node._l) * eval(*node._r);
+                        } else if (node._l) {
+                            return eval(*node._l) * node.constant;
+                        } else if (node._r) {
+                            return node.constant * eval(*node._l);
+                        }
+                        return 0.0;
                         },
                     [](const divide_node& node){
-                        return eval(*node._l) / eval(*node._r);
+                        if (node._l && node._r) {
+                            return eval(*node._l) / eval(*node._r);
+                        } else if (node._l) {
+                            return eval(*node._l) / node.constant;
+                        } else if (node._r) {
+                            return node.constant / eval(*node._l);
+                        }
+                        return 0.0;
                         },
                     [](const sin_node& node){
                         return std::sin(eval(*node._l));
@@ -210,9 +249,6 @@ namespace ad{
 
         static bool depend_on(const differential_node& node,unsigned int idx){
             return std::visit(overloaded{
-                    [](const auto& node){
-                        return false;
-                    },
                     [](const constant_node& node){
                         return false;
                     },
@@ -220,16 +256,44 @@ namespace ad{
                         return node.idx == idx;
                     },
                     [idx](const add_node& node){
-                        return depend_on(*node._l,idx) || depend_on(*node._r,idx);
+                        if(node._l&&node._r){
+                            return depend_on(*node._l,idx) || depend_on(*node._r,idx);
+                        } else if(node._l){
+                            return depend_on(*node._l,idx);
+                        }else if(node._r){
+                            return depend_on(*node._r,idx);
+                        }
+                        return false;
                     },
                     [idx](const minus_node& node){
-                        return depend_on(*node._l,idx) || depend_on(*node._r,idx);
+                        if(node._l&&node._r){
+                            return depend_on(*node._l,idx) || depend_on(*node._r,idx);
+                        } else if(node._l){
+                            return depend_on(*node._l,idx);
+                        }else if(node._r){
+                            return depend_on(*node._r,idx);
+                        }
+                        return false;
                     },
                     [idx](const multiply_node& node){
-                        return depend_on(*node._l,idx) || depend_on(*node._r,idx);
+                        if(node._l&&node._r){
+                            return depend_on(*node._l,idx) || depend_on(*node._r,idx);
+                        } else if(node._l){
+                            return depend_on(*node._l,idx);
+                        }else if(node._r){
+                            return depend_on(*node._r,idx);
+                        }
+                        return false;
                     },
                     [idx](const divide_node& node){
-                        return depend_on(*node._l,idx) || depend_on(*node._r,idx);
+                        if(node._l&&node._r){
+                            return depend_on(*node._l,idx) || depend_on(*node._r,idx);
+                        } else if(node._l){
+                            return depend_on(*node._l,idx);
+                        }else if(node._r){
+                            return depend_on(*node._r,idx);
+                        }
+                        return false;
                     },
                     [idx](const sin_node& node){
                         return depend_on(*node._l,idx);
@@ -266,9 +330,6 @@ namespace ad{
 
         static double derivative_for(const differential_node& node, unsigned int idx){
             return std::visit(overloaded{
-                    [](const auto& node){
-                        return 0.0;
-                    },
                     [](const constant_node& node){
                         return 0.0;
                     },
@@ -277,34 +338,34 @@ namespace ad{
                     },
                     [idx](const add_node& node){
                         double temp = 0;
-                        if(depend_on(*node._l,idx)){
+                        if(node._l&&depend_on(*node._l,idx)){
                             temp += derivative_for(*node._l,idx);
                         }
-                        if(depend_on(*node._r,idx)){
+                        if(node._r&&depend_on(*node._r,idx)){
                             temp += derivative_for(*node._r,idx);
                         }
                         return temp;
                     },
                     [idx](const minus_node& node){
                         double temp = 0;
-                        if(depend_on(*node._l,idx)){
+                        if(node._l&&depend_on(*node._l,idx)){
                             temp += derivative_for(*node._l,idx);
                         }
-                        if(depend_on(*node._r,idx)){
+                        if(node._r&&depend_on(*node._r,idx)){
                             temp -= derivative_for(*node._r,idx);
                         }
                         return temp;
                     },
                     [idx](const multiply_node& node){
-                        auto dfdx_mul_gx = depend_on(*node._l,idx)?derivative_for(*node._l,idx)* eval(*node._r):0;
-                        auto dgdx_mul_fx = depend_on(*node._r,idx)?derivative_for(*node._r,idx)* eval(*node._l):0;
+                        auto dfdx_mul_gx = (node._l&&depend_on(*node._l,idx))?derivative_for(*node._l,idx)* eval(*node._r):0.0;
+                        auto dgdx_mul_fx = (node._r&&depend_on(*node._r,idx))?derivative_for(*node._r,idx)* eval(*node._l):0.0;
                         return dfdx_mul_gx + dgdx_mul_fx;
                     },
                     [idx](const divide_node& node){
                         auto gx = eval(*node._r);
                         auto gx2 = gx*gx;
-                        auto dfdx_mul_gx = depend_on(*node._l,idx)?derivative_for(*node._l,idx)* eval(*node._r):0;
-                        auto dgdx_mul_fx = depend_on(*node._r,idx)?derivative_for(*node._r,idx)* eval(*node._l):0;
+                        auto dfdx_mul_gx = (node._l&&depend_on(*node._l,idx))?derivative_for(*node._l,idx)* eval(*node._r):0.0;
+                        auto dgdx_mul_fx = (node._r&&depend_on(*node._r,idx))?derivative_for(*node._r,idx)* eval(*node._l):0.0;
                         return (dfdx_mul_gx-dgdx_mul_fx)/gx2;
                     },
                     [idx](const sin_node& node){
@@ -368,35 +429,35 @@ namespace ad{
     }
 
     inline detail::nsp operator+(double l, const  detail::nsp &r) {
-        return detail::make_differential_node(add_node{detail::make_differential_node({constant_node{l}}),r});
+        return detail::make_differential_node(add_node{r,l});
     }
 
     inline detail::nsp operator-(double l, const  detail::nsp&r) {
-        return detail::make_differential_node(minus_node{detail::make_differential_node(constant_node{l}),r});
+        return detail::make_differential_node(minus_node{l,r});
     }
 
     inline detail::nsp operator*(double l, const  detail::nsp &r) {
-        return detail::make_differential_node(multiply_node{detail::make_differential_node(constant_node{l}),r});
+        return detail::make_differential_node(multiply_node{r,l});
     }
 
     inline detail::nsp operator/(double l, const  detail::nsp &r) {
-        return detail::make_differential_node(divide_node{detail::make_differential_node(constant_node{l}),r});
+        return detail::make_differential_node(divide_node{l,r});
     }
 
     inline detail::nsp operator+(const  detail::nsp &l, double r){
-        return detail::make_differential_node(add_node{l, detail::make_differential_node(constant_node{r})});
+        return detail::make_differential_node(add_node{l, r});
     }
 
     inline detail::nsp operator-(const  detail::nsp &l, double r){
-        return detail::make_differential_node(minus_node{l, detail::make_differential_node(constant_node{r})});
+        return detail::make_differential_node(minus_node{l, r});
     }
 
     inline detail::nsp operator*(const  detail::nsp &l, double r){
-        return detail::make_differential_node(multiply_node{l, detail::make_differential_node(constant_node{r})});
+        return detail::make_differential_node(multiply_node{l, r});
     }
 
     inline detail::nsp operator/(const  detail::nsp &l, double r){
-        return detail::make_differential_node(divide_node{l, detail::make_differential_node(constant_node{r})});
+        return detail::make_differential_node(divide_node{l, r});
     }
 
     inline detail::nsp sin( const detail::nsp& d) {

@@ -48,10 +48,10 @@ Double loss(Vector100 v){
 
 Double sphere100D(Vector100 v){
     Double ret;
-    for(int i =0;i<v.size();++i){
+    for(int i =0;i<100;++i){
         ret = ret + pow(v[i] - i,2);
     }
-    return ret + 1;
+    return ret + 1.0;
 }
 
 template<int n ,bool silence = true>

@@ -29,7 +29,9 @@ namespace ad{
     struct differentiable_var<differential_mode::REVERSE>{
         detail::nsp _node;
 
-        differentiable_var() = default;
+        differentiable_var(){
+            _node = std::make_shared<differential_node>(constant_node{0});
+        }
 
         differentiable_var(double v,uint idx){
             _node = std::make_shared<differential_node>(variable_node{v,idx});
@@ -314,7 +316,7 @@ namespace ad{
     template<int n>
     static std::pair<double,std::array<double,n>> gradient_at(
             const std::function<detail::dvr(std::array<detail::dvr,n>)>& f,
-            std::initializer_list<double> args){
+            std::array<double,n> args){
 
         std::array<double,n> grad{};
         std::array<detail::dvr,n> aargs;
@@ -335,6 +337,19 @@ namespace ad{
         }
 
         return {eval_result, grad};
+    }
+
+    template<int n>
+    static std::pair<double,std::array<double,n>> gradient_at(
+            const std::function<detail::dvr(std::array<detail::dvr,n>)>& f,
+            std::initializer_list<double> args){
+
+        std::array<double,n> arr{};
+        int i = 0;
+        for(double arg : args){
+            arr[i++] = arg;
+        }
+        return gradient_at<n>(f,arr);
     }
 
 }

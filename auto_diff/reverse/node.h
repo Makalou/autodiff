@@ -181,8 +181,9 @@ namespace ad{
                             return eval(*node._l) + node.constant;
                         } else if (node._r) {
                             return node.constant + eval(*node._l);
+                        }else{
+                            return 0.0;
                         }
-                        return 0.0;
                     },
                     [](const minus_node& node){
                         if (node._l && node._r) {
@@ -191,8 +192,9 @@ namespace ad{
                             return eval(*node._l) - node.constant;
                         } else if (node._r) {
                             return node.constant - eval(*node._l);
+                        }else {
+                            return 0.0;
                         }
-                        return 0.0;
                         },
                     [](const multiply_node& node){
                         if (node._l && node._r) {
@@ -201,8 +203,9 @@ namespace ad{
                             return eval(*node._l) * node.constant;
                         } else if (node._r) {
                             return node.constant * eval(*node._l);
+                        } else{
+                            return 0.0;
                         }
-                        return 0.0;
                         },
                     [](const divide_node& node){
                         if (node._l && node._r) {
@@ -211,8 +214,9 @@ namespace ad{
                             return eval(*node._l) / node.constant;
                         } else if (node._r) {
                             return node.constant / eval(*node._l);
+                        }else{
+                            return 0.0;
                         }
-                        return 0.0;
                         },
                     [](const sin_node& node){
                         return std::sin(eval(*node._l));
@@ -262,8 +266,9 @@ namespace ad{
                             return depend_on(*node._l,idx);
                         }else if(node._r){
                             return depend_on(*node._r,idx);
+                        }else{
+                            return false;
                         }
-                        return false;
                     },
                     [idx](const minus_node& node){
                         if(node._l&&node._r){
@@ -272,8 +277,9 @@ namespace ad{
                             return depend_on(*node._l,idx);
                         }else if(node._r){
                             return depend_on(*node._r,idx);
+                        }else{
+                            return false;
                         }
-                        return false;
                     },
                     [idx](const multiply_node& node){
                         if(node._l&&node._r){
@@ -282,8 +288,9 @@ namespace ad{
                             return depend_on(*node._l,idx);
                         }else if(node._r){
                             return depend_on(*node._r,idx);
+                        }else{
+                            return false;
                         }
-                        return false;
                     },
                     [idx](const divide_node& node){
                         if(node._l&&node._r){
@@ -292,8 +299,9 @@ namespace ad{
                             return depend_on(*node._l,idx);
                         }else if(node._r){
                             return depend_on(*node._r,idx);
+                        }else{
+                            return false;
                         }
-                        return false;
                     },
                     [idx](const sin_node& node){
                         return depend_on(*node._l,idx);
@@ -337,7 +345,7 @@ namespace ad{
                         return idx == node.idx? 1.0 : 0.0;
                     },
                     [idx](const add_node& node){
-                        double temp = 0;
+                        double temp = .0;
                         if(node._l&&depend_on(*node._l,idx)){
                             temp += derivative_for(*node._l,idx);
                         }
@@ -347,7 +355,7 @@ namespace ad{
                         return temp;
                     },
                     [idx](const minus_node& node){
-                        double temp = 0;
+                        double temp = 0.;
                         if(node._l&&depend_on(*node._l,idx)){
                             temp += derivative_for(*node._l,idx);
                         }
@@ -357,15 +365,27 @@ namespace ad{
                         return temp;
                     },
                     [idx](const multiply_node& node){
-                        auto dfdx_mul_gx = (node._l&&depend_on(*node._l,idx))?derivative_for(*node._l,idx)* eval(*node._r):0.0;
-                        auto dgdx_mul_fx = (node._r&&depend_on(*node._r,idx))?derivative_for(*node._r,idx)* eval(*node._l):0.0;
+                        auto dfdx_mul_gx =
+                                (node._l&&depend_on(*node._l,idx))?
+                                derivative_for(*node._l,idx) * (node._r?eval(*node._r):node.constant):
+                                0.0;
+                        auto dgdx_mul_fx =
+                                (node._r&&depend_on(*node._r,idx))?
+                                derivative_for(*node._r,idx)* (node._l?eval(*node._l):node.constant):
+                                0.0;
                         return dfdx_mul_gx + dgdx_mul_fx;
                     },
                     [idx](const divide_node& node){
-                        auto gx = eval(*node._r);
+                        auto gx = node._r?eval(*node._r):node.constant;
                         auto gx2 = gx*gx;
-                        auto dfdx_mul_gx = (node._l&&depend_on(*node._l,idx))?derivative_for(*node._l,idx)* eval(*node._r):0.0;
-                        auto dgdx_mul_fx = (node._r&&depend_on(*node._r,idx))?derivative_for(*node._r,idx)* eval(*node._l):0.0;
+                        auto dfdx_mul_gx =
+                                (node._l&&depend_on(*node._l,idx))?
+                                derivative_for(*node._l,idx) * (node._r?eval(*node._r):node.constant):
+                                0.0;
+                        auto dgdx_mul_fx =
+                                (node._r&&depend_on(*node._r,idx))?
+                                derivative_for(*node._r,idx)* (node._l?eval(*node._l):node.constant):
+                                0.0;
                         return (dfdx_mul_gx-dgdx_mul_fx)/gx2;
                     },
                     [idx](const sin_node& node){

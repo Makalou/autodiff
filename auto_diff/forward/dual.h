@@ -13,8 +13,8 @@ namespace ad {
 
     struct dual_number {
     public:
-        double _dual_part{0};
-        double _real_part{0};
+        double _dual_part{.0};
+        double _real_part{.0};
     public:
 
         dual_number() = default;
@@ -177,13 +177,13 @@ namespace ad {
     }
 
     inline dual_number tan( dual_number d) {
-        auto sec = 1/std::cos(d._real_part);
+        auto sec = 1.0/std::cos(d._real_part);
         auto sec2 = sec*sec;
         return dual_number{std::tan(d._real_part),sec2*d._dual_part};
     }
 
     inline dual_number pow( dual_number d, double n){
-        return dual_number{std::pow(d._real_part,n),n*std::pow(d._real_part,n-1)*d._dual_part};
+        return dual_number{std::pow(d._real_part,n),n*std::pow(d._real_part,n-1.0)*d._dual_part};
     }
 
     inline dual_number pow(double a,  dual_number d){
@@ -203,21 +203,21 @@ namespace ad {
     }
 
     inline dual_number ln( dual_number d){
-        return dual_number{std::log(d._real_part),1/d._real_part*d._dual_part};
+        return dual_number{std::log(d._real_part),1.0/d._real_part*d._dual_part};
     }
 
     inline dual_number asin( dual_number d){
-        auto dx = 1/(std::sqrt(1-d._real_part*d._real_part));
+        auto dx = 1.0/(std::sqrt(1.0-d._real_part*d._real_part));
         return dual_number{std::asin(d._real_part),dx*d._dual_part};
     }
 
     inline dual_number acos( dual_number d){
-        auto dx = -1/(std::sqrt(1-d._real_part*d._real_part));
+        auto dx = -1.0/(std::sqrt(1.0 - d._real_part*d._real_part));
         return dual_number{std::acos(d._real_part),dx*d._dual_part};
     }
 
     inline dual_number atan( dual_number d){
-        auto dx = 1/(1+d._real_part*d._real_part);
+        auto dx = 1.0/(1.0+d._real_part*d._real_part);
         return dual_number{std::atan(d._real_part),dx*d._dual_part};
     }
 

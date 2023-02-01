@@ -30,7 +30,7 @@ namespace ad{
         detail::nsp _node;
 
         differentiable_var(){
-            _node = std::make_shared<differential_node>(constant_node{0});
+            _node = std::make_shared<differential_node>(constant_node{.0});
         }
 
         differentiable_var(double v,uint idx){
@@ -242,37 +242,39 @@ namespace ad{
     }
 
     //End Reverse Differential Variable Operator Overloading
+
+    /*
+     * FORWARD MODE OVERLOADING
+     */
     static double value_at(const std::function<detail::dvf( detail::dvf)>& f,double x){
-        auto u_dual = detail::dvf{ad::dual_number{x,1}};
+        auto u_dual = detail::dvf{ad::dual_number{x,1.0}};
         auto res = f(u_dual)._dual;
         return res._real_part;
     }
 
     static double gradient_at(const std::function<detail::dvf( detail::dvf)>& f,double x){
-        auto u_dual = detail::dvf{ad::dual_number{x,1}};
+        auto u_dual = detail::dvf{ad::dual_number{x,1.0}};
         auto res = f(u_dual)._dual;
         return res._dual_part;
     }
 
     static std::pair<double,double> value_and_gradient_at(const std::function<detail::dvf( detail::dvf)>& f,double x){
-        auto u_dual = detail::dvf{ad::dual_number{x,1}};
+        auto u_dual = detail::dvf{ad::dual_number{x,1.0}};
         auto res = f(u_dual)._dual;
         return {res._real_part,res._dual_part};
     }
 
     static double value_at(const std::function<detail::dvf(detail::dvf, detail::dvf)>& f,double x,double y){
 
-        auto dfdx = f(detail::dvf{dual_number{x,1}},detail::dvf{dual_number{y,0}})._dual;
-        auto dfdy = f(detail::dvf{dual_number{x,0}},detail::dvf{dual_number{y,1}})._dual;
+        auto dfdx = f(detail::dvf{dual_number{x,1.0}},detail::dvf{dual_number{y,.0}})._dual;
 
-        assert(dfdx._real_part == dfdy._real_part);
         return dfdx._real_part;
     }
 
     static std::pair<double,double> gradient_at(const std::function<detail::dvf(detail::dvf, detail::dvf)>& f,double x,double y){
 
-        auto dfdx = f(detail::dvf{dual_number{x,1}},detail::dvf{dual_number{y,0}})._dual;
-        auto dfdy = f(detail::dvf{dual_number{x,0}},detail::dvf{dual_number{y,1}})._dual;
+        auto dfdx = f(detail::dvf{dual_number{x,1.0}},detail::dvf{dual_number{y,.0}})._dual;
+        auto dfdy = f(detail::dvf{dual_number{x,.0}},detail::dvf{dual_number{y,1.0}})._dual;
 
         assert(dfdx._real_part == dfdy._real_part);
         return {dfdx._dual_part,dfdy._dual_part};
@@ -280,42 +282,66 @@ namespace ad{
 
     static std::pair<double,std::pair<double,double>> value_and_gradient_at(const std::function<detail::dvf(detail::dvf, detail::dvf)>& f,double x,double y){
 
-        auto dfdx = f(detail::dvf{dual_number{x,1}},detail::dvf{dual_number{y,0}})._dual;
-        auto dfdy = f(detail::dvf{dual_number{x,0}},detail::dvf{dual_number{y,1}})._dual;
+        auto dfdx = f(detail::dvf{dual_number{x,1.0}},detail::dvf{dual_number{y,.0}})._dual;
+        auto dfdy = f(detail::dvf{dual_number{x,.0}},detail::dvf{dual_number{y,1.0}})._dual;
 
         assert(dfdx._real_part == dfdy._real_part);
         return {dfdx._real_part,{dfdx._dual_part,dfdy._dual_part}};
     }
 
-    //Really naive implementation...
-    template<int n>
-    static std::pair<double,double> value_and_gradient_at(
-            const std::function<detail::dvf(std::array<detail::dvf,n>)>& f,
-            std::array<double,n> args,unsigned int grad_for){
+    namespace detail{
+        template<unsigned int n>
+        using dvf_array = std::array<detail::dvf,n>;
 
-        std::array<detail::dvf,n> aargs{};
+        template<unsigned int n>
+        using dvr_array = std::array<detail::dvr,n>;
 
-        std::transform(args.begin(),args.end(),aargs.begin(),[](const double arg){
-            return detail::dvf{dual_number{arg,0}};
-        });
+        template<unsigned int n>
+        using dvf_scalar_func_nd = std::function<detail::dvf(dvf_array<n>)>;
 
-        aargs[grad_for]._dual._dual_part = 1;
+        template<unsigned int n>
+        using dvr_scalar_func_nd = std::function<detail::dvr(dvr_array<n>)>;
 
-        dual_number res = f(aargs)._dual;
+        template<unsigned int n,unsigned int m>
+        using dvf_md_func_nd = std::function<dvf_array<m>(dvf_array<n>)>;
 
-        return {res._real_part, res._dual_part};
+        template<unsigned int n,unsigned int m>
+        using dvr_md_func_nd = std::function<dvr_array<m>(dvr_array<n>)>;
+    }
+    //todo Really naive implementation...
+
+    // value
+    template<unsigned int n>
+    static double value_at(
+            const detail::dvf_scalar_func_nd<n>& f,
+            std::array<double,n> args){
+        return 0.0;
     }
 
-    template<int n>
-    static std::pair<double,std::array<double,n>> value_and_gradient_at(
-            const std::function<detail::dvf(std::array<detail::dvf,n>)>& f,
+    template<unsigned int n>
+    static double value_at(
+            const detail::dvf_scalar_func_nd<n>& f,
+            std::initializer_list<double> args){
+
+        std::array<double,n> arr{};
+        int i = 0;
+        for(double arg : args){
+            arr[i++] = arg;
+        }
+        return value_and_gradient_at<n>(f,arr);
+    }
+
+    //gradient for all
+    template<unsigned int n>
+    static std::array<double,n> gradient_at(
+            const detail::dvf_scalar_func_nd<n>& f,
             std::array<double,n> args){
         std::array<double,n> grad{};
 
         std::array<detail::dvf,n> aargs{};
 
         std::transform(args.begin(),args.end(),aargs.begin(),[](const double arg){
-            return detail::dvf{dual_number{arg,0}};
+            return detail::dvf{dual_number{arg,.0}};
         });
 
         double eval_result{};
@@ -331,9 +357,9 @@ namespace ad{
         return {eval_result, grad};
     }
 
-    template<int n>
-    static std::pair<double,std::array<double,n>> value_and_gradient_at(
-            const std::function<detail::dvf(std::array<detail::dvf,n>)>& f,
+    template<unsigned int n>
+    static std::array<double,n> gradient_at(
+            const detail::dvf_scalar_func_nd<n>& f,
             std::initializer_list<double> args){
 
         std::array<double,n> arr{};
@@ -344,22 +370,153 @@ namespace ad{
         return value_and_gradient_at<n>(f,arr);
     }
 
+    //gradient for x_i
+    template<unsigned int n>
+    static double gradient_at(
+            const detail::dvf_scalar_func_nd<n>& f,
+            std::array<double,n> args,unsigned int grad_for){
+        std::array<double,n> grad{};
+
+        std::array<detail::dvf,n> aargs{};
+
+        std::transform(args.begin(),args.end(),aargs.begin(),[](const double arg){
+            return detail::dvf{dual_number{arg,.0}};
+        });
+
+        double eval_result{};
+        for(int i =0;i<args.size();++i){
+            aargs[i]._dual._dual_part = 1;
+            auto dual = f(aargs)._dual;
+            aargs[i]._dual._dual_part = 0;
+            assert(eval_result == 0 || eval_result == dual._real_part);
+            eval_result = dual._real_part;
+            grad[i] = dual._dual_part;
+        }
+
+        return {eval_result, grad};
+    }
+
+    template<unsigned int n>
+    static double gradient_at(
+            const detail::dvf_scalar_func_nd<n>& f,
+            std::initializer_list<double> args,unsigned int grad_for){
+        std::array<double,n> grad{};
+
+        std::array<detail::dvf,n> aargs{};
+
+        std::transform(args.begin(),args.end(),aargs.begin(),[](const double arg){
+            return detail::dvf{dual_number{arg,.0}};
+        });
+
+        double eval_result{};
+        for(unsigned int i = 0U;i<args.size();++i){
+            aargs[i]._dual._dual_part = 1;
+            auto dual = f(aargs)._dual;
+            aargs[i]._dual._dual_part = 0;
+            assert(eval_result == 0 || eval_result == dual._real_part);
+            eval_result = dual._real_part;
+            grad[i] = dual._dual_part;
+        }
+
+        return {eval_result, grad};
+    }
+
+    //value and gradient for all
+
+    template<unsigned int n>
+    static std::pair<double,std::array<double,n>> value_and_gradient_at(
+            const detail::dvf_scalar_func_nd<n>& f,
+            std::array<double,n> args){
+        std::array<double,n> grad{};
+
+        std::array<detail::dvf,n> aargs{};
+
+        std::transform(args.begin(),args.end(),aargs.begin(),[](const double arg){
+            return detail::dvf{dual_number{arg,.0}};
+        });
+
+        double eval_result{};
+        for(int i =0;i<args.size();++i){
+            aargs[i]._dual._dual_part = 1;
+            auto dual = f(aargs)._dual;
+            aargs[i]._dual._dual_part = 0;
+            assert(eval_result == 0 || eval_result == dual._real_part);
+            eval_result = dual._real_part;
+            grad[i] = dual._dual_part;
+        }
+
+        return {eval_result, grad};
+    }
+
+    template<unsigned int n>
+    static std::pair<double,std::array<double,n>> value_and_gradient_at(
+            const detail::dvf_scalar_func_nd<n>& f,
+            std::initializer_list<double> args){
+
+        std::array<double,n> arr{};
+        int i = 0;
+        for(double arg : args){
+            arr[i++] = arg;
+        }
+        return value_and_gradient_at<n>(f,arr);
+    }
+
+    //value and gradient for x_i
+    template<unsigned int n>
+    static std::pair<double,double> value_and_gradient_at(
+            const detail::dvf_scalar_func_nd<n>& f,
+            std::array<double,n> args,unsigned int grad_for){
+
+        std::array<detail::dvf,n> aargs{};
+
+        std::transform(args.begin(),args.end(),aargs.begin(),[](const double arg){
+            return detail::dvf{dual_number{arg,.0}};
+        });
+
+        aargs[grad_for]._dual._dual_part = 1;
+
+        dual_number res = f(aargs)._dual;
+
+        return {res._real_part, res._dual_part};
+    }
+
+    template<unsigned int n>
+    static std::pair<double,double> value_and_gradient_at(
+            const detail::dvf_scalar_func_nd<n>& f,
+            std::initializer_list<double> args,unsigned int grad_for){
+
+        std::array<detail::dvf,n> aargs{};
+
+        std::transform(args.begin(),args.end(),aargs.begin(),[](const double arg){
+            return detail::dvf{dual_number{arg,.0}};
+        });
+
+        aargs[grad_for]._dual._dual_part = 1;
+
+        dual_number res = f(aargs)._dual;
+
+        return {res._real_part, res._dual_part};
+    }
+
+    /*
+     * REVERSE MODE OVERLOADING
+     */
     static std::pair<double,double> value_and_gradient_at(const std::function<detail::dvr( detail::dvr)>& f,double x){
-        detail::dvr _x {x,0};
+        detail::dvr _x {x,0U};
         auto z = f(_x);
-        return {detail::eval(*z._node),detail::derivative_for(*z._node,0)};
+        return {detail::eval(*z._node),detail::derivative_for(*z._node,0U)};
     }
 
     static std::pair<double,std::pair<double,double>> value_and_gradient_at(const std::function<detail::dvr( detail::dvr, detail::dvr)>& f,double x,double y){
-        auto z = f({x,0},{y,1});
+        auto z = f({x,0U},{y,1U});
         auto out = detail::eval(*z._node);
-        auto dfdx = detail::derivative_for(*z._node,0);
-        auto dfdy = detail::derivative_for(*z._node,1);
+        auto dfdx = detail::derivative_for(*z._node,0U);
+        auto dfdy = detail::derivative_for(*z._node,1U);
         return {out,{dfdx,dfdy}};
     }
 
     //Really naive implementation...
-    template<int n>
+    template<unsigned int n>
     static std::pair<double,std::array<double,n>> value_and_gradient_at(
             const std::function<detail::dvr(std::array<detail::dvr,n>)>& f,
             std::array<double,n> args){
@@ -367,7 +524,7 @@ namespace ad{
         std::array<double,n> grad{};
         std::array<detail::dvr,n> aargs;
 
-        unsigned int idx = 0;
+        unsigned int idx = 0U;
 
         for(const auto arg : args){
             aargs[idx] = {arg,idx};
@@ -385,7 +542,7 @@ namespace ad{
         return {eval_result, grad};
     }
 
-    template<int n>
+    template<unsigned int n>
     static std::pair<double,std::array<double,n>> value_and_gradient_at(
             const std::function<detail::dvr(std::array<detail::dvr,n>)>& f,
             std::initializer_list<double> args){

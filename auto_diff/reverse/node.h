@@ -12,6 +12,7 @@
 namespace ad{
 
     using uint = unsigned int;
+    using uint64 = long long;
 
     struct constant_node;
 
@@ -63,26 +64,39 @@ namespace ad{
 
     struct constant_node{
         double val{};
+        uint64 dependency_mask = 0;
     };
 
     struct variable_node{
         double val{};
         unsigned int idx;
+        uint64 dependency_mask = 1;
+        variable_node(double v,unsigned id) : val(v),idx(id),dependency_mask(1<<id){}
     };
 
     struct add_node{
         detail::nsp _l;
         detail::nsp _r;
         double constant{};
-        add_node(detail::nsp  l, detail::nsp  r) : _l(std::move(l)),_r(std::move(r)){};
-        add_node(double l, detail::nsp  r) : constant(l),_r(std::move(r)){};
-        add_node(detail::nsp l, double  r) : _l(std::move(l)),constant(r){};
+        uint64 dependency_mask = 1;
+
+        add_node(detail::nsp  l, detail::nsp  r) : _l(std::move(l)),_r(std::move(r)){
+
+        };
+        add_node(double l, detail::nsp  r) : constant(l),_r(std::move(r)){
+
+        };
+        add_node(detail::nsp l, double  r) : _l(std::move(l)),constant(r){
+
+        };
     };
 
     struct minus_node{
         detail::nsp _l;
         detail::nsp _r;
         double constant{};
+        uint64 dependency_mask = 1;
+
         minus_node(detail::nsp  l, detail::nsp  r) : _l(std::move(l)),_r(std::move(r)){};
         minus_node(double  l, detail::nsp  r) : constant(l),_r(std::move(r)){};
         minus_node(detail::nsp l, double  r) : _l(std::move(l)),constant(r){};
@@ -92,6 +106,8 @@ namespace ad{
         detail::nsp _l;
         detail::nsp _r;
         double constant{};
+        uint64 dependency_mask = 1;
+
         multiply_node(detail::nsp l, detail::nsp r):_l(std::move(l)),_r(std::move(r)){};
         multiply_node(double l, detail::nsp r):constant(l),_r(std::move(r)){};
         multiply_node(detail::nsp l, double r):_l(std::move(l)),constant(r){};
@@ -101,6 +117,8 @@ namespace ad{
         detail::nsp _l;
         detail::nsp _r;
         double constant{};
+        uint64 dependency_mask = 1;
+
         divide_node(detail::nsp l, detail::nsp r):_l(std::move(l)),_r(std::move(r)){};
         divide_node(double l, detail::nsp r):constant(l),_r(std::move(r)){};
         divide_node(detail::nsp l, double r):_l(std::move(l)),constant(r){};
@@ -108,19 +126,23 @@ namespace ad{
 
     struct sin_node{
         detail::nsp _l;
+        uint64 dependency_mask = 1;
     };
 
     struct cos_node{
         detail::nsp _l;
+        uint64 dependency_mask;
     };
 
     struct tan_node{
         detail::nsp _l;
+        uint64 dependency_mask;
     };
 
     struct pow_node{
         double _pow;
         detail::nsp _l;
+        uint64 dependency_mask = 1;
 
         pow_node(const detail::nsp& l,double pow){
             _l = l;
@@ -130,11 +152,13 @@ namespace ad{
 
     struct sqrt_node{
         detail::nsp _l;
+        uint64 dependency_mask;
     };
 
     struct exp_node{
         double _base{};
         bool is_base_e{false};
+        uint64 dependency_mask = 1;
 
         detail::nsp _l;
 
@@ -151,18 +175,22 @@ namespace ad{
 
     struct ln_node{
         detail::nsp _l;
+        uint64 dependency_mask;
     };
 
     struct asin_node{
         detail::nsp _l;
+        uint64 dependency_mask;
     };
 
     struct acos_node{
         detail::nsp _l;
+        uint64 dependency_mask;
     };
 
     struct atan_node{
         detail::nsp _l;
+        uint64 dependency_mask;
     };
 
     namespace detail{
@@ -258,85 +286,8 @@ namespace ad{
 
         static bool depend_on(const differential_node& node,unsigned int idx){
             return std::visit(overloaded{
-                    [](const constant_node& node){
-                        return false;
-                    },
-                    [idx](const variable_node& node){
-                        return node.idx == idx;
-                    },
-                    [idx](const add_node& node){
-                        if(node._l&&node._r){
-                            return depend_on(*node._l,idx) || depend_on(*node._r,idx);
-                        } else if(node._l){
-                            return depend_on(*node._l,idx);
-                        }else if(node._r){
-                            return depend_on(*node._r,idx);
-                        }else{
-                            return false;
-                        }
-                    },
-                    [idx](const minus_node& node){
-                        if(node._l&&node._r){
-                            return depend_on(*node._l,idx) || depend_on(*node._r,idx);
-                        } else if(node._l){
-                            return depend_on(*node._l,idx);
-                        }else if(node._r){
-                            return depend_on(*node._r,idx);
-                        }else{
-                            return false;
-                        }
-                    },
-                    [idx](const multiply_node& node){
-                        if(node._l&&node._r){
-                            return depend_on(*node._l,idx) || depend_on(*node._r,idx);
-                        } else if(node._l){
-                            return depend_on(*node._l,idx);
-                        }else if(node._r){
-                            return depend_on(*node._r,idx);
-                        }else{
-                            return false;
-                        }
-                    },
-                    [idx](const divide_node& node){
-                        if(node._l&&node._r){
-                            return depend_on(*node._l,idx) || depend_on(*node._r,idx);
-                        } else if(node._l){
-                            return depend_on(*node._l,idx);
-                        }else if(node._r){
-                            return depend_on(*node._r,idx);
-                        }else{
-                            return false;
-                        }
-                    },
-                    [idx](const sin_node& node){
-                        return depend_on(*node._l,idx);
-                    },
-                    [idx](const cos_node& node){
-                        return depend_on(*node._l,idx);
-                    },
-                    [idx](const tan_node& node){
-                        return depend_on(*node._l,idx);
-                    },
-                    [idx](const pow_node& node){
-                        return depend_on(*node._l,idx);
-                    },
-                    [idx](const sqrt_node& node){
-                        return depend_on(*node._l,idx);
-                    },
-                    [idx](const exp_node& node) {
-                        return depend_on(*node._l,idx);
-                    },
-                    [idx](const ln_node& node) {
-                        return depend_on(*node._l,idx);
-                    },
-                    [idx](const asin_node& node){
-                        return depend_on(*node._l,idx);
-                    },
-                    [idx](const acos_node& node){
-                        return depend_on(*node._l,idx);
-                    },
-                    [idx](const atan_node& node){
-                        return depend_on(*node._l,idx);
+                    [idx](const auto & _node)->bool {
+                        return  _node.dependency_mask & static_cast<uint64>(1<<idx);
                     }
             },node);
         }

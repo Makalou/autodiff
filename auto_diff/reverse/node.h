@@ -50,9 +50,14 @@ namespace ad{
 
     namespace detail{
         using nsp = std::shared_ptr<differential_node>;
+        using nup = std::unique_ptr<differential_node>;
 
-        inline nsp make_differential_node(differential_node&& node){
+        inline nsp make_differential_node_shared(differential_node && node){
             return std::make_shared<differential_node>(node);
+        }
+
+        inline nup make_differential_node_unique(differential_node&& node){
+            return std::make_unique<differential_node>(node);
         }
     }
 
@@ -433,95 +438,95 @@ namespace ad{
     }
 
     inline detail::nsp operator+(const  detail::nsp &l, const  detail::nsp &r) {
-        return detail::make_differential_node(add_node{l,r});
+        return detail::make_differential_node_shared(add_node{l, r});
     }
 
     inline detail::nsp operator-(const  detail::nsp &l, const  detail::nsp &r) {
-        return detail::make_differential_node(minus_node{l,r});
+        return detail::make_differential_node_shared(minus_node{l, r});
     }
 
     inline detail::nsp operator*(const  detail::nsp &l, const  detail::nsp &r) {
-        return detail::make_differential_node(multiply_node{l,r});
+        return detail::make_differential_node_shared(multiply_node{l, r});
     }
 
     inline detail::nsp operator/(const  detail::nsp &l, const  detail::nsp &r) {
-        return detail::make_differential_node(divide_node{l,r});
+        return detail::make_differential_node_shared(divide_node{l, r});
     }
 
     inline detail::nsp operator+(double l, const  detail::nsp &r) {
-        return detail::make_differential_node(add_node{r,l});
+        return detail::make_differential_node_shared(add_node{r, l});
     }
 
     inline detail::nsp operator-(double l, const  detail::nsp&r) {
-        return detail::make_differential_node(minus_node{l,r});
+        return detail::make_differential_node_shared(minus_node{l, r});
     }
 
     inline detail::nsp operator*(double l, const  detail::nsp &r) {
-        return detail::make_differential_node(multiply_node{r,l});
+        return detail::make_differential_node_shared(multiply_node{r, l});
     }
 
     inline detail::nsp operator/(double l, const  detail::nsp &r) {
-        return detail::make_differential_node(divide_node{l,r});
+        return detail::make_differential_node_shared(divide_node{l, r});
     }
 
     inline detail::nsp operator+(const  detail::nsp &l, double r){
-        return detail::make_differential_node(add_node{l, r});
+        return detail::make_differential_node_shared(add_node{l, r});
     }
 
     inline detail::nsp operator-(const  detail::nsp &l, double r){
-        return detail::make_differential_node(minus_node{l, r});
+        return detail::make_differential_node_shared(minus_node{l, r});
     }
 
     inline detail::nsp operator*(const  detail::nsp &l, double r){
-        return detail::make_differential_node(multiply_node{l, r});
+        return detail::make_differential_node_shared(multiply_node{l, r});
     }
 
     inline detail::nsp operator/(const  detail::nsp &l, double r){
-        return detail::make_differential_node(divide_node{l, r});
+        return detail::make_differential_node_shared(divide_node{l, r});
     }
 
     inline detail::nsp sin( const detail::nsp& d) {
-        return detail::make_differential_node(sin_node{d});
+        return detail::make_differential_node_shared(sin_node{d});
     }
 
     inline detail::nsp cos( const detail::nsp& d) {
-        return detail::make_differential_node(cos_node{d});
+        return detail::make_differential_node_shared(cos_node{d});
     }
 
     inline detail::nsp tan( const detail::nsp& d) {
-        return detail::make_differential_node(tan_node{d});
+        return detail::make_differential_node_shared(tan_node{d});
     }
 
     inline detail::nsp pow( const detail::nsp& d, double n){
-        return detail::make_differential_node(pow_node{d,n});
+        return detail::make_differential_node_shared(pow_node{d, n});
     }
 
     inline detail::nsp pow(double a,  const detail::nsp& d){
-        return detail::make_differential_node(exp_node{a,d});
+        return detail::make_differential_node_shared(exp_node{a, d});
     }
 
     inline detail::nsp sqrt( const detail::nsp& d){
-        return detail::make_differential_node(sqrt_node{d});
+        return detail::make_differential_node_shared(sqrt_node{d});
     }
 
     inline detail::nsp exp( const detail::nsp& d){
-        return detail::make_differential_node(exp_node{d});
+        return detail::make_differential_node_shared(exp_node{d});
     }
 
     inline detail::nsp ln( const detail::nsp& d){
-        return detail::make_differential_node(ln_node{d});
+        return detail::make_differential_node_shared(ln_node{d});
     }
 
     inline detail::nsp asin( const detail::nsp& d){
-        return detail::make_differential_node(asin_node{d});
+        return detail::make_differential_node_shared(asin_node{d});
     }
 
     inline detail::nsp acos( const detail::nsp& d){
-        return detail::make_differential_node(acos_node{d});
+        return detail::make_differential_node_shared(acos_node{d});
     }
 
     inline detail::nsp atan( const detail::nsp& d){
-        return detail::make_differential_node(atan_node{d});
+        return detail::make_differential_node_shared(atan_node{d});
     }
 }
 #endif //AUTODIFF_NODE_H

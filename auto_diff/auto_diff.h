@@ -328,7 +328,7 @@ namespace ad{
         for(double arg : args){
             arr[i++] = arg;
         }
-        return value_and_gradient_at<n>(f,arr);
+        //return value_and_gradient_at<n>(f,arr);
     }
 
     //gradient for all
@@ -367,7 +367,7 @@ namespace ad{
         for(double arg : args){
             arr[i++] = arg;
         }
-        return value_and_gradient_at<n>(f,arr);
+        //return value_and_gradient_at<n>(f,arr);
     }
 
     //gradient for x_i

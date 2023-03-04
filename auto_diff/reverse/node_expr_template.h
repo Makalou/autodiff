@@ -29,8 +29,8 @@ namespace ad::expr_template{
 
         template<class E1, class E2>
         struct add_node : expr_node<add_node<E1,E2>>{
-            const E1 & _l;
-            const E2 & _r;
+            E1  _l;
+            E2  _r;
 
             add_node(E1 const& l, E2 const& r) : _l(l), _r(r) { }
 
@@ -46,7 +46,7 @@ namespace ad::expr_template{
         template<class E2>
         struct add_node<double,E2> : expr_node<add_node<double,E2>>{
             double _l;
-            const E2 & _r;
+            E2 _r;
 
             add_node(double l, E2 const& r) : _l(l), _r(r) { }
 
@@ -61,7 +61,7 @@ namespace ad::expr_template{
 
         template<class E1>
         struct add_node<E1,double> : expr_node<add_node<E1,double>>{
-            const E1 & _l;
+            E1 _l;
             double _r;
 
             add_node(E1 const& l, double r) : _l(l), _r(r) { }
@@ -77,8 +77,8 @@ namespace ad::expr_template{
 
         template<class E1, class E2>
         struct minus_node : expr_node<minus_node<E1,E2>>{
-            const E1 & _l;
-            const E2 & _r;
+            E1 _l;
+            E2 _r;
 
             minus_node(E1 const& l, E2 const& r) : _l(l), _r(r) { }
 
@@ -93,7 +93,7 @@ namespace ad::expr_template{
 
         template<class E1>
         struct minus_node<E1,double> : expr_node<minus_node<E1,double>>{
-            const E1 & _l;
+            E1 _l;
             double _r;
 
             minus_node(E1 const& l, double r) : _l(l), _r(r) { }
@@ -110,7 +110,7 @@ namespace ad::expr_template{
         template<class E2>
         struct minus_node<double,E2> : expr_node<minus_node<double,E2>>{
             double _l;
-            const E2 & _r;
+            const E2 _r;
 
             minus_node(double l, E2 const& r) : _l(l), _r(r) { }
 
@@ -125,8 +125,8 @@ namespace ad::expr_template{
 
         template<class E1, class E2>
         struct multiply_node : expr_node<multiply_node<E1,E2>>{
-            const E1 & _l;
-            const E2 & _r;
+            E1 _l;
+            E2 _r;
 
             multiply_node(E1 const& l, E2 const& r) : _l(l), _r(r) { }
 
@@ -144,7 +144,7 @@ namespace ad::expr_template{
 
         template<class E1>
         struct multiply_node<E1,double> : expr_node<multiply_node<E1,double>>{
-            const E1 & _l;
+            E1 _l;
             double _r;
 
             multiply_node(E1 const& l, double r) : _l(l), _r(r) { }
@@ -161,7 +161,7 @@ namespace ad::expr_template{
         template<class E2>
         struct multiply_node<double,E2> : expr_node<multiply_node<double,E2>>{
             double _l;
-            const E2 & _r;
+            E2 _r;
 
             multiply_node(double l, E2 const& r) : _l(l), _r(r) { }
 
@@ -176,8 +176,8 @@ namespace ad::expr_template{
 
         template<class E1, class E2>
         struct divide_node : expr_node<divide_node<E1,E2>>{
-            const E1 & _l;
-            const E2 & _r;
+            E1 _l;
+            E2 _r;
 
             divide_node(E1 const& l, E2 const& r) : _l(l), _r(r) { }
 
@@ -192,7 +192,7 @@ namespace ad::expr_template{
 
         template<class E1>
         struct divide_node<E1,double> : expr_node<divide_node<E1,double>>{
-            const E1 & _l;
+            E1 _l;
             double _r;
 
             divide_node(E1 const& l, double r) : _l(l), _r(r) { }
@@ -209,7 +209,7 @@ namespace ad::expr_template{
         template<class E2>
         struct divide_node<double,E2> : expr_node<divide_node<double,E2>>{
             double _l;
-            const E2 & _r;
+            E2 _r;
 
             divide_node(double l, E2 const& r) : _l(l), _r(r) { }
 
@@ -224,7 +224,7 @@ namespace ad::expr_template{
 
         template<class E>
         struct sin_node : expr_node<sin_node<E>>{
-            const E & _l;
+            E _l;
 
             explicit sin_node(E const& l) : _l(l){ }
 
@@ -239,7 +239,7 @@ namespace ad::expr_template{
 
         template<class E>
         struct cos_node : expr_node<cos_node<E>>{
-            const E & _l;
+            E _l;
 
             explicit cos_node(E const& l) : _l(l){ }
 
@@ -254,7 +254,7 @@ namespace ad::expr_template{
 
         template<class E>
         struct tan_node : expr_node<tan_node<E>>{
-            const E & _l;
+            E _l;
 
             explicit tan_node(E const& l) : _l(l){ }
 
@@ -269,7 +269,7 @@ namespace ad::expr_template{
 
         template<class E>
         struct pow_node : expr_node<pow_node<E>>{
-            const E & _l;
+            E _l;
             double _pow{};
 
             pow_node(E const& l, double pow) : _l(l),_pow(pow){}
@@ -285,7 +285,7 @@ namespace ad::expr_template{
 
         template<class E>
         struct sqrt_node : expr_node<sqrt_node<E>>{
-            const E & _l;
+            E _l;
 
             explicit sqrt_node(E const& l) : _l(l){ }
 
@@ -300,7 +300,7 @@ namespace ad::expr_template{
 
         template<class E>
         struct exp_node : expr_node<exp_node<E>>{
-            const E & _l;
+            E _l;
             bool is_base_e{false};
             double _base{};
 
@@ -319,7 +319,7 @@ namespace ad::expr_template{
 
         template<class E>
         struct ln_node : expr_node<ln_node<E>>{
-            const E & _l;
+            E _l;
 
             explicit ln_node(E const& l) : _l(l){ }
 
@@ -334,7 +334,7 @@ namespace ad::expr_template{
 
         template<class E>
         struct asin_node : expr_node<asin_node<E>>{
-            const E & _l;
+            E _l;
 
             explicit asin_node(E const& l) : _l(l){ }
 
@@ -349,7 +349,7 @@ namespace ad::expr_template{
 
         template<class E>
         struct acos_node : expr_node<acos_node<E>>{
-            const E & _l;
+            E _l;
 
             explicit acos_node(E const& l) : _l(l){ }
 
@@ -364,7 +364,7 @@ namespace ad::expr_template{
 
         template<class E>
         struct atan_node : expr_node<atan_node<E>>{
-            const E & _l;
+            E _l;
 
             explicit atan_node(E const& l) : _l(l){ }
 

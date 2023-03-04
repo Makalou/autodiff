@@ -5,7 +5,7 @@
 #ifndef AUTODIFF_ALLOCATOR_H
 #define AUTODIFF_ALLOCATOR_H
 
-#include "node.h"
+#include "node_variant.h"
 
 class node_allocator{
 

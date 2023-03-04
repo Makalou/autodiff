@@ -9,7 +9,7 @@
 #include <cassert>
 
 #include "forward/dual.h"
-#include "reverse/node.h"
+#include "reverse/node_variant.h"
 
 namespace ad{
     enum class differential_mode{

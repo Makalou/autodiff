@@ -2,12 +2,13 @@
 // Created by 王泽远 on 2023/1/9.
 //
 
-#ifndef AUTODIFF_NODE_H
-#define AUTODIFF_NODE_H
+#ifndef AUTODIFF_NODE_VARIANT_H
+#define AUTODIFF_NODE_VARIANT_H
 
 #include <utility>
 #include <memory>
 #include <variant>
+#include "mpark/variant.hpp"
 
 namespace ad{
 
@@ -46,7 +47,7 @@ namespace ad{
 
     struct atan_node;
 
-    using differential_node = std::variant<constant_node,variable_node,add_node,minus_node,multiply_node,divide_node,sin_node
+    using differential_node = mpark::variant<constant_node,variable_node,add_node,minus_node,multiply_node,divide_node,sin_node
                                             ,cos_node,tan_node,pow_node,sqrt_node,exp_node,ln_node,asin_node,acos_node,atan_node>;
 
     namespace detail{
@@ -200,7 +201,7 @@ namespace ad{
         template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
         static double eval(const differential_node& node){
-            return std::visit(overloaded{
+            return mpark::visit(overloaded{
                     [](const constant_node& node){
                         return node.val;
                     },
@@ -285,7 +286,7 @@ namespace ad{
         }
 
         static bool depend_on(const differential_node& node,unsigned int idx){
-            return std::visit(overloaded{
+            return mpark::visit(overloaded{
                     [idx](const auto & _node)->bool {
                         return  _node.dependency_mask & static_cast<uint64>(1<<idx);
                     }
@@ -293,7 +294,7 @@ namespace ad{
         }
 
         static double derivative_for(const differential_node& node, unsigned int idx){
-            return std::visit(overloaded{
+            return mpark::visit(overloaded{
                     [](const constant_node& node){
                         return 0.0;
                     },
@@ -480,4 +481,4 @@ namespace ad{
         return detail::make_differential_node_shared(atan_node{d});
     }
 }
-#endif //AUTODIFF_NODE_H
+#endif //AUTODIFF_NODE_VARIANT_H
